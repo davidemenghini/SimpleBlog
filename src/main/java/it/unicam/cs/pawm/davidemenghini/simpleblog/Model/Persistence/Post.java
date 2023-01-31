@@ -3,6 +3,10 @@ package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+/**
+ * Questa classe
+ */
 @Entity
 @Table(name="Post")
 @Getter

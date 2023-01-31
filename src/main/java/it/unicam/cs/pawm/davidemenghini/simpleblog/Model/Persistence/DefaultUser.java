@@ -2,10 +2,7 @@ package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @NoArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class DefaultUser {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -23,6 +21,15 @@ public class DefaultUser {
 
     @Column(name = "psw")
     private String psw;
+
+    @Column
+    private byte[] data_img;
+
+    @Column
+    private String role_user;
+
+    @Column
+    private int enabled;
 
 
 }

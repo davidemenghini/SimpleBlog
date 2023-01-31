@@ -2,13 +2,19 @@ package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence;
 
 
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 /**
- * TODO implemetare
  * Questa classe rappresenta un commento in un post.
  */
 @Entity
 @Table(name="Comment")
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
+@ToString
 public class Comment {
 
     @Id
@@ -16,7 +22,7 @@ public class Comment {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
-    @Column(name="textComment")
+    @Column(name="text_comment")
     private byte[] textComment;
 
     @Column(name="like_number")
@@ -25,41 +31,11 @@ public class Comment {
     @Column(name="dislike_number")
     private int dislike_number;
 
-    public Comment() {
+    @Column(name="ida")
+    private Integer idAuthor;
 
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public byte[] getTextComment() {
-        return textComment;
-    }
-
-    public void setTextComment(byte[] text) {
-        this.textComment = text;
-    }
-
-    public int getLike_number() {
-        return like_number;
-    }
-
-    public void setLike_number(int like) {
-        this.like_number = like;
-    }
-
-    public int getDislike_number() {
-        return dislike_number;
-    }
-
-    public void setDislike_number(int dislike) {
-        this.dislike_number = dislike;
-    }
+    @Column(name = "idp")
+    private Integer idPost;
 
 
 }

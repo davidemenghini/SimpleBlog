@@ -6,8 +6,10 @@ CREATE TABLE IF NOT EXISTS Comment(
                                       id int primary key auto_increment,
                                       text_comment blob,
                                       like_number int,
-                                      dislike_number int
-) CHARACTER SET latin1;
+                                      dislike_number int,
+                                      ida int,
+                                      idp int
+) CHARACTER SET utf8;
 CREATE TABLE IF NOT EXISTS Post(
                                    id int primary key ,
                                    data_text blob ,
@@ -19,6 +21,8 @@ CREATE TABLE IF NOT EXISTS Post(
 CREATE TABLE IF NOT EXISTS default_user(
                                           id int primary key,
                                           data_img blob,
-                                          username tinytext,
-                                          psw tinyblob
-) CHARACTER SET latin1;
+                                          username varchar(45),
+                                          psw varchar(64),
+                                          role_user varchar(45),
+                                          enabled tinyint
+) CHARACTER SET utf8;
