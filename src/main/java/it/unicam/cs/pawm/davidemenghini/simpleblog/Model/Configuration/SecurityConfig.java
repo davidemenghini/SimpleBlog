@@ -1,5 +1,7 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Configuration;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserDetailsService;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security.DefaultLoginHandler;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security.SessionHandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +58,11 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public SessionHandlerUtil sessionHandlerUtil(){
+        return new DefaultLoginHandler();
     }
 
 

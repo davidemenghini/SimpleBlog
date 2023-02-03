@@ -1,6 +1,4 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.model.repository;
-
-
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Comment;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultCommentCrudRepository;
@@ -10,9 +8,7 @@ import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserC
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,10 +48,6 @@ public class DefaultRepositoryTest {
     public void getCommentByIdpTest(){
         List<Comment> expected = this.getExpectedCommentFromPostOne();
         List<Comment> actual = this.commentRepo.findCommentsByByidPost(1);
-        System.out.println(new String(actual.get(0).getTextComment(),StandardCharsets.UTF_8));
-        System.out.println(new String(expected.get(0).getTextComment(),StandardCharsets.UTF_8));
-        System.out.println(new String(actual.get(1).getTextComment(),StandardCharsets.UTF_8));
-        System.out.println(new String(expected.get(1).getTextComment(),StandardCharsets.UTF_8));
         assertEquals(expected,actual);
     }
 
@@ -96,8 +88,10 @@ public class DefaultRepositoryTest {
         user.setEnabled(0);
         user.setId(1);
         user.setData_img("null".getBytes());
-        user.setPsw("prova1");
+        user.setPsw("683ca0111aee25516ac67f7f3d8d2717f6c075940ec2ceaa8f4d251f491d9adf");
         user.setUsername("utente1");
+        user.setSalt("pippo");
+        user.setSession_id(null);
         return user;
     }
 

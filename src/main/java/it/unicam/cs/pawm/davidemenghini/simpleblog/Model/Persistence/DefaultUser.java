@@ -22,14 +22,19 @@ public class DefaultUser {
     @Column(name = "psw")
     private String psw;
 
-    @Column
+    @Column(name="data_img")
     private byte[] data_img;
 
-    @Column
+    @Column(name = "role_user")
     private String role_user;
 
-    @Column
+    @Column(name="enabled")
     private int enabled;
 
+    @Column(name="salt")
+    private String salt;
+
+    @Column(name="session_id")
+    private String session_id;
 
 }

@@ -24,5 +24,7 @@ CREATE TABLE IF NOT EXISTS default_user(
                                           username varchar(45),
                                           psw varchar(64),
                                           role_user varchar(45),
-                                          enabled tinyint
+                                          enabled tinyint,
+                                          salt varchar(64),
+                                          session_id varchar(128)
 ) CHARACTER SET utf8;
