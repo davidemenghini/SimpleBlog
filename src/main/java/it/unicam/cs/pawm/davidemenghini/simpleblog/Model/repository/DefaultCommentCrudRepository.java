@@ -1,6 +1,7 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository;
 
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Comment;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

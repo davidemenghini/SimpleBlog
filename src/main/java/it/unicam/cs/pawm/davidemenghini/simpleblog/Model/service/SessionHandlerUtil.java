@@ -1,4 +1,4 @@
-package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security;
+package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
  * Questa interfaccia serve per permettere ad un utente di effettuare il login ed il logout.
  */
 @Component
+@Service
+@Transactional
 public interface SessionHandlerUtil {
 
     /**
@@ -43,6 +45,21 @@ public interface SessionHandlerUtil {
      * permette di eseguire il logout.
      */
     void logout(String username,String session_id);
+
+    /**
+     * Questo metodo permette di restituire il token per evitare attacchi di tipo "Cross Site Request Forgery".
+     * @param idu id dell'utente.
+     * @return Il token dell'utente. Nel caso in cui non ci sia nessun token associato all'utente, allora verr&agrave; restituita
+     *          una stringa vuota ("").
+     */
+    String getCsrfToken(int idu);
+
+
+    /**
+     * Questo metodo restituisce l'utente.
+     * @return l'utente ricercato.
+     */
+    DefaultUser getUser();
 
 
 

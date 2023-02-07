@@ -1,9 +1,7 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Controller;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Configuration.SecurityConfig;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultPostCrudRepository;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserCrudRepository;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.PostService;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.UserSessionChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +9,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@RestController
+@Controller
 public class PostApi{
 
     private Post p;
@@ -30,10 +26,10 @@ public class PostApi{
     private static final Logger logger = LoggerFactory.getLogger(PostApi.class);
 
     @Autowired
-    private DefaultPostCrudRepository postRepo;
+    private UserSessionChecker userSessionChecker;
 
     @Autowired
-    private DefaultUserCrudRepository userRepo;
+    private PostService postService;
 
 
     @RequestMapping(value = "/api/public/post/{id}", method = POST)
@@ -50,29 +46,26 @@ public class PostApi{
     }
 
     @RequestMapping(value = "/api/private/post/add/{idPost}", method = POST)
-    @ResponseBody
-    public ResponseEntity<String> AddComment(@CookieValue("session_id") String session_id, @RequestBody Post post){
-        int idUser = Objects.requireNonNull(this.userRepo.findById(post.getId_author()).orElse(null)).getId();
-        if (idUser != Integer.getInteger(session_id)){
-            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    //@ResponseBody
+    public ResponseEntity<Post> AddComment(@CookieValue("session_id") String session_id,@CookieValue("csrf_cookie") String csrf_cookie, @RequestBody Post post){
+        if(!this.userSessionChecker.checkSession(session_id,csrf_cookie, p.getId_author())){
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }
-        this.p = post;
-        this.postRepo.save(p);
-        return new ResponseEntity<>("",HttpStatus.OK);
+        this.postService.createPost(post);
+        return new ResponseEntity<>(post,HttpStatus.OK);
     }
 
 
     @PostMapping(value = "/api/public/post/random/")
     @ResponseBody
-    public List<Post> getRandomComment(){
-        return this.getRandomPosts();
+    public ResponseEntity<List<Post>> getRandomComment(){
+        return new ResponseEntity<>(this.postService.getRandomPosts(this.RANDOM_POST),HttpStatus.OK);
+
     }
 
 
     private List<Post> getRandomPosts(){
-        List<Post> l = new ArrayList<>();
-        Pageable firstPageWithTwoElements = PageRequest.of(0, this.RANDOM_POST);
-        this.postRepo.findAll(firstPageWithTwoElements).forEach(l::add);
+        List<Post> l = this.postService.getRandomPosts(this.RANDOM_POST);
         l.forEach(System.out::println);
         return l;
     }

@@ -1,19 +1,15 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.model.security;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.UserCsrfToken;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultTokenRepository;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserCrudRepository;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security.SessionHandlerUtil;
-import jakarta.transaction.Transactional;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.SessionHandlerUtil;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.Isolated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +25,9 @@ public class LoginHandlerTest {
 
 
     @Autowired
+    private DefaultTokenRepository tokenRepo;
+
+    @Autowired
     private DefaultUserCrudRepository userRepo;
 
 
@@ -36,7 +35,7 @@ public class LoginHandlerTest {
     @Order(2)
     public void launchIllegalStateException(){
         DefaultUser expectedUser = this.getExpectedUser();
-        this.sessionHandlerUtil.checkUser(expectedUser.getUsername());
+        //this.sessionHandlerUtil.checkUser(expectedUser.getUsername());
         Exception exception = assertThrows(IllegalStateException.class,() ->this.sessionHandlerUtil.checkPasswordAfterSecretAndSalt(""));
     }
 
@@ -47,30 +46,46 @@ public class LoginHandlerTest {
     }
 
     @Test
+    @Order(3)
     public void saltAndSecretPasswordTest(){
-        this.checkUser();
+        //this.checkUser();
         String hashedPsw = this.sessionHandlerUtil.saltAndSecretPsw("prova1");
         assertEquals("683ca0111aee25516ac67f7f3d8d2717f6c075940ec2ceaa8f4d251f491d9adf",hashedPsw);
     }
 
     @Test
-    @Transactional
+    @Order(4)
     public void loginTest(){
-        this.checkUser();
-        String psw = this.sessionHandlerUtil.saltAndSecretPsw("prova1");
-        this.sessionHandlerUtil.checkPasswordAfterSecretAndSalt(psw);
+        //controllo tabella default_user
         DefaultUser user = this.sessionHandlerUtil.login();
         assertNotNull(user);
         assertEquals(1,user.getEnabled());
-        this.userRepo.setEnableAndSession_idForUser(null,0,1);
     }
-
 
     @Test
-    public void logoutTest(){
-        DefaultUser user = this.makeLogin();
-        this.sessionHandlerUtil.logout(user.getUsername(),user.getSession_id());
+    @Order(5)
+    public void csfrTokenTest(){
+        String userCsrfToken = this.sessionHandlerUtil.getCsrfToken(1);
+        assertNotNull(userCsrfToken);
+        UserCsrfToken t = this.tokenRepo.findById(1).orElse(null);
+        assertNotNull(t);
+        UserCsrfToken expectedTokenObj = new UserCsrfToken();
+        expectedTokenObj.setToken(userCsrfToken);
+        expectedTokenObj.setId(1);
+        assertEquals(expectedTokenObj,t);
     }
+
+    @Test
+    @Order(6)
+    public void logoutTest(){
+        //DefaultUser user = this.makeLogin();
+        DefaultUser user = this.userRepo.findDefaultUserByUsername("utente1");
+        this.sessionHandlerUtil.logout("utente1",user.getSession_id());
+        DefaultUser actualUser = this.userRepo.findDefaultUserByUsername("utente1");
+        assertNull(actualUser.getSession_id());
+        assertEquals(0,actualUser.getEnabled());
+    }
+
 
     private DefaultUser getExpectedUser() {
         DefaultUser user = new DefaultUser();
@@ -91,13 +106,6 @@ public class LoginHandlerTest {
     }
 
 
-    private DefaultUser makeLogin(){
-        this.checkUser();
-        String psw = this.sessionHandlerUtil.saltAndSecretPsw("prova1");
-        this.sessionHandlerUtil.checkPasswordAfterSecretAndSalt(psw);
-        this.sessionHandlerUtil.login();
-        return this.userRepo.findById(1).orElse(null);
-    }
 
 
 

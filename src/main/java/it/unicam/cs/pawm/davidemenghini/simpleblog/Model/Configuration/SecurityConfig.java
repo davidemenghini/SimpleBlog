@@ -1,7 +1,6 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Configuration;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserDetailsService;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security.DefaultLoginHandler;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.security.SessionHandlerUtil;
+
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -44,10 +42,6 @@ public class SecurityConfig{
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new DefaultUserDetailsService();
-    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
@@ -65,5 +59,14 @@ public class SecurityConfig{
         return new DefaultLoginHandler();
     }
 
+    @Bean
+    public UserSessionChecker checkUserSession(){
+        return new DefaultUserCheckerChecker();
+    }
 
+
+    @Bean
+    public PostService postService(){
+        return new DefaultPostService();
+    }
 }

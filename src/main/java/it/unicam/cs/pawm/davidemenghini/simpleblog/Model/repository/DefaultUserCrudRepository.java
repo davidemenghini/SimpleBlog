@@ -1,6 +1,6 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
  * Permette di eseguire operazioni CRUD per l'entità {@link DefaultUser}.
  */
 @Repository
-public interface DefaultUserCrudRepository extends CrudRepository<DefaultUser,Integer> {
+public interface DefaultUserCrudRepository extends CrudRepository<DefaultUser,Integer>, JpaRepository<DefaultUser,Integer> {
 
 
     DefaultUser findDefaultUserByUsername(String username);
 
 
     /**
-     * Questo metodo serve per aggiornare lo stato online o offline nel repository.
+     * Questo metodo serve per aggiornare lo stato online od offline nel repository.
      * @param session_id Il session id della sessione. In caso di logout {&egrave;} null.
      * @param enable 1 se l'utente ha effettuato il login, 0 se ha effettuato il logout.
      * @param id id dell'utente.

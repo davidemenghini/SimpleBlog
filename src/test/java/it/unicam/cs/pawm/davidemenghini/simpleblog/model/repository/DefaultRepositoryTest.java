@@ -45,6 +45,14 @@ public class DefaultRepositoryTest {
     }
 
     @Test
+    public void getRandomPostsTest(){
+        List<Post> actual = this.postRepo.readRandomPost(1);
+        assertEquals(1,actual.size());
+        actual = this.postRepo.readRandomPost(2);
+        assertEquals(2,actual.size());
+    }
+
+    @Test
     public void getCommentByIdpTest(){
         List<Comment> expected = this.getExpectedCommentFromPostOne();
         List<Comment> actual = this.commentRepo.findCommentsByByidPost(1);
