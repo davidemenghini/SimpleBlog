@@ -1,6 +1,7 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class DefaultUser {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     @Column(name = "username")
+    @JsonProperty("username")
     private String username;
 
     @Column(name = "psw")

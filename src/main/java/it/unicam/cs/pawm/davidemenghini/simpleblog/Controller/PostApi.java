@@ -1,22 +1,23 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Controller;
+import com.google.gson.Gson;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.PostService;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.UserSessionChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000/")
 public class PostApi{
 
     private Post p;
@@ -58,17 +59,26 @@ public class PostApi{
 
     @PostMapping(value = "/api/public/post/random/")
     @ResponseBody
-    public ResponseEntity<List<Post>> getRandomComment(){
-        return new ResponseEntity<>(this.postService.getRandomPosts(this.RANDOM_POST),HttpStatus.OK);
+    public ResponseEntity<List<String>> getRandomPosts(){
+        List<Post> rp = this.postService.getRandomPosts(this.RANDOM_POST);
+        //logger.info(rp.toString());
+        return new ResponseEntity<>(this.fromObjectsToStringList(rp),HttpStatus.OK);
 
     }
 
 
-    private List<Post> getRandomPosts(){
-        List<Post> l = this.postService.getRandomPosts(this.RANDOM_POST);
-        l.forEach(System.out::println);
-        return l;
+    private List<String> fromObjectsToStringList(List<Post> list){
+        Gson gson = new Gson();
+        List<String> stringLists = new ArrayList<>();
+        for(Post p : list){
+            String json = gson.toJson(p);
+            stringLists.add(json);
+        }
+        logger.info("fromObjectsToStringList: "+ stringLists);
+        return stringLists;
     }
+
+
 
 
 

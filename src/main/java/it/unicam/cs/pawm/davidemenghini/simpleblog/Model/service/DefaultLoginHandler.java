@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Transactional
 public class DefaultLoginHandler implements SessionHandlerUtil{
 
     private boolean hasBeenSaltAndSecret = false;

@@ -65,7 +65,8 @@ public class DefaultRepositoryTest {
         expectedPost.setId(1);
         byte[] data_text = "Test".getBytes();
         expectedPost.setData_text(data_text);
-        expectedPost.setData_img("null".getBytes());
+        byte[] data_img = new byte[0];
+        expectedPost.setData_img(data_img);
         expectedPost.setId_author(1);
         byte[] title_text = "ciao questa è una prova.".getBytes(StandardCharsets.UTF_8);
         expectedPost.setTitle_text(title_text);

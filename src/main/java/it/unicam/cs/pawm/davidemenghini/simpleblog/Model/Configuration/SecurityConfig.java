@@ -10,6 +10,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 //@EnableWebSecurity
@@ -25,12 +31,12 @@ public class SecurityConfig{
                 autz.requestMatchers("/api/private/login")
                             .hasRole("user")
                         .and()
-                            .formLogin(x->x.loginPage("/api/private/login"))
                         .authorizeHttpRequests()
                         .requestMatchers("/api/public/**")
                         .permitAll()
                         .and()
-                        .csrf(csfr-> csfr.ignoringRequestMatchers("/api/public/**"));
+                        .csrf(csfr-> csfr.ignoringRequestMatchers("/api/public/**"))
+                        ;//.cors(cors -> cors.configurationSource(this.corsConfigurationSource()));
             } catch (Exception e) {
                 System.out.println("errore nel bean...");
                 logger.error(e.getMessage());
@@ -38,7 +44,6 @@ public class SecurityConfig{
                 throw new RuntimeException(e);
             }
         });
-        logger.info("so dentro al filtro...");
         return http.build();
     }
 
@@ -48,6 +53,15 @@ public class SecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
+
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000/"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
