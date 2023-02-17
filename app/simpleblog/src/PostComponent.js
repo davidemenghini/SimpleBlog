@@ -8,12 +8,15 @@ export default class PostComponent extends Component{
 
     constructor(props){
         super(props)
+        this.showCommentsHandler = this.showCommentsHandler.bind(this);
         this.state = {
             id: props.id,
             ida: props.ida,
             title: Buffer.from(props.title, 'utf-8').toString(),
             img: props.img,
-            text:  Buffer.from(props.text, 'utf-8').toString()
+            text:  Buffer.from(props.text, 'utf-8').toString(),
+            showComments: false,
+            Comments: []
         };
 
     }
@@ -29,20 +32,26 @@ export default class PostComponent extends Component{
             </div>
             
             <br></br>
-            <div style={{textAlign: 'center'}}>
+            <div /*style={{textAlign: 'center'}}*/>
                 <span style={{}}>
-                    <button className="btn btn-light">mi piace!</button>
-                    <button style={{marginLeft:'5%'}}className="btn btn-dark">non mi piace!</button>
+                    <button className="btn btn-light" style={{marginLeft:'5%'}}>mi piace!</button>
+                    <button style={{float:'right', marginRight:'5%'}} className="btn btn-dark">non mi piace!</button>
                 </span>
                 <br></br>
                 <br></br>
-                <span style={{position: 'center'}}>
-                <button className="btn btn-light">aggiungi un commento...</button>
+                <span style={{textAlign: 'center'}}>
+                    <button className="btn btn-light" onClick={this.showCommentsHandler()} style={{}}>mostra commmenti</button>
+                    <button className="btn btn-light" style={{}}>aggiungi un commento...</button>
                 </span>
             </div>
             
             
         </div>)
+    }
+
+
+    showCommentsHandler(){
+        console.log('ciao')
     }
 
 

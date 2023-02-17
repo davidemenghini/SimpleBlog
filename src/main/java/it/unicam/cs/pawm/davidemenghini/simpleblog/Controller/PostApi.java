@@ -47,7 +47,7 @@ public class PostApi{
     }
 
     @RequestMapping(value = "/api/private/post/add/{idPost}", method = POST)
-    //@ResponseBody
+    @ResponseBody
     public ResponseEntity<Post> AddComment(@CookieValue("session_id") String session_id,@CookieValue("csrf_cookie") String csrf_cookie, @RequestBody Post post){
         if(!this.userSessionChecker.checkSession(session_id,csrf_cookie, p.getId_author())){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);

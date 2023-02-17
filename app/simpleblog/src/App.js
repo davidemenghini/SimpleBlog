@@ -63,11 +63,9 @@ export default class App extends Component{
           var p1Obj = JSON.parse(response.data[0])
           var p2Obj = JSON.parse(response.data[1])
           var p1 = new Post(p1Obj.id,p1Obj.id_author,p1Obj.data_text,p1Obj.title_text);
-          console.log(p1Obj.data_img)
           p1.setRawDataImg(p1Obj.data_img)
           var p2 = new Post(p2Obj.id,p2Obj.id_author,p2Obj.data_text,p2Obj.title_text);
           p2.setRawDataImg(p2Obj.data_img);
-          console.log(JSON.stringify(p1),JSON.stringify(p2))
           self.setState({
             posts: [p1,p2]
           });

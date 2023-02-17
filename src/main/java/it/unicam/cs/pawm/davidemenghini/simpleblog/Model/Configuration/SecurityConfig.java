@@ -83,4 +83,9 @@ public class SecurityConfig{
     public PostService postService(){
         return new DefaultPostService();
     }
+
+    @Bean
+    public CommentService commentService(){return new DefaultCommentService();}
+
+
 }
