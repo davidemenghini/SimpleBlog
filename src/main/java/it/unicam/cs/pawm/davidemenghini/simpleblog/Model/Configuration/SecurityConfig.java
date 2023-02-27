@@ -32,10 +32,14 @@ public class SecurityConfig{
                             .hasRole("user")
                         .and()
                         .authorizeHttpRequests()
-                        .requestMatchers("/api/public/**")
+                        .requestMatchers("/**")
                         .permitAll()
                         .and()
-                        .csrf(csfr-> csfr.ignoringRequestMatchers("/api/public/**"))
+                        .authorizeHttpRequests()
+                        .requestMatchers("/**")
+                        .permitAll()
+                        .and()
+                        .csrf().disable();
                         ;//.cors(cors -> cors.configurationSource(this.corsConfigurationSource()));
             } catch (Exception e) {
                 System.out.println("errore nel bean...");
@@ -88,4 +92,8 @@ public class SecurityConfig{
     public CommentService commentService(){return new DefaultCommentService();}
 
 
+    @Bean
+    public DefaultUserService userService(){
+        return new DefaultUserService();
+    }
 }

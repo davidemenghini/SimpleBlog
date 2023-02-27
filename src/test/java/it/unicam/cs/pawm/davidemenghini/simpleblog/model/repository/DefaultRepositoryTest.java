@@ -70,6 +70,8 @@ public class DefaultRepositoryTest {
         expectedPost.setId_author(1);
         byte[] title_text = "ciao questa è una prova.".getBytes(StandardCharsets.UTF_8);
         expectedPost.setTitle_text(title_text);
+        expectedPost.setLikeNumber(0);
+        expectedPost.setDislikeNumber(0);
         return expectedPost;
     }
 
@@ -101,6 +103,7 @@ public class DefaultRepositoryTest {
         user.setUsername("utente1");
         user.setSalt("pippo");
         user.setSession_id(null);
+        user.setExpiration_time(null);
         return user;
     }
 

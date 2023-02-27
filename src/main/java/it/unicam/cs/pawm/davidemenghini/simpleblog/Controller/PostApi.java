@@ -67,7 +67,26 @@ public class PostApi{
     }
 
 
-    private List<String> fromObjectsToStringList(List<Post> list){
+    @PostMapping(value = "/api/private/post/like/{idUser}")
+    @ResponseBody
+    public ResponseEntity<String> isPostLikedToUser(@CookieValue("session_id") String session_id,@CookieValue("csrf_cookie") String csrf_cookie,@PathVariable int idUser){
+        if(!this.userSessionChecker.checkSession(session_id,csrf_cookie, p.getId_author())){
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
+        }
+        return this.postService.isLikedToUser(idUser) ? new ResponseEntity<>("yes",HttpStatus.OK) : new ResponseEntity<>("no",HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/api/private/post/dislike/{idUser}")
+    @ResponseBody
+    public ResponseEntity<String> isPostDislikedToUser(@CookieValue("session_id") String session_id,@CookieValue("csrf_cookie") String csrf_cookie,@PathVariable int idUser){
+        if(!this.userSessionChecker.checkSession(session_id,csrf_cookie, p.getId_author())){
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
+        }
+        return this.postService.isDislikedToUser(idUser) ? new ResponseEntity<>("yes",HttpStatus.OK) : new ResponseEntity<>("no",HttpStatus.OK);
+    }
+
+
+        private List<String> fromObjectsToStringList(List<Post> list){
         Gson gson = new Gson();
         List<String> stringLists = new ArrayList<>();
         for(Post p : list){

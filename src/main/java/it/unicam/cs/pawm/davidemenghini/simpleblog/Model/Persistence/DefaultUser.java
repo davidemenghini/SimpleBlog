@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "default_user")
 @Getter
@@ -38,5 +40,8 @@ public class DefaultUser {
 
     @Column(name="session_id")
     private String session_id;
+
+    @Column(name = "expiration_time")
+    private LocalDateTime expiration_time;
 
 }

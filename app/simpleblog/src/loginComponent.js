@@ -12,11 +12,13 @@ export default class LoginForm extends React.Component{
             user : "",
             pass : "",
             api : new UserApi(),
-            isLoading: false
+            isLoading: false,
+            isUserLogged: props.isUserLogged
         };
     }
+    
 
-    render() {
+    render(props) {
         return (
         <div>    
         {this.state.isLoading===false ? 
@@ -26,7 +28,7 @@ export default class LoginForm extends React.Component{
                 <input onChange={evt => this.userChangeHandler(evt)} type="text" name="user"></input><br></br>
                 <b>Password:</b><br></br>
                 <input  onChange={evt => this.passChangeHandler(evt)} type="text" name="pass"></input><br></br>
-                <button className="btn btn-success" onClick={(user,pass)=>this.loginClick(user,pass)}>Effettua il login!</button><br></br>
+                <button className="btn btn-success" onClick={()=>this.props.loginFunc(this.state.user,this.state.pass)}>Effettua il login!</button><br></br>
                 <button className="btn btn-warning">Cancella dati!</button><br></br>
             </div> : 
             <div className="spinner-border text-primary" role="status" style={{position: 'fixed',width: '100%',textAlign: 'center'}}>
@@ -37,14 +39,14 @@ export default class LoginForm extends React.Component{
     }
 
     
-    loginClick(user,pass){
+    async loginClick(user,pass){
         this.setState({
             isLoading: true
         })
-        console.log(this.state.isLoading);
         if(user!== "" && pass !== ""){
             var jsonLogin = JSON.stringify({user:this.state.user,psw:this.state.pass});
-            var ret = this.state.api.makeLogin(jsonLogin);
+            console.log(jsonLogin)
+            var ret = await this.state.api.makeLogin({user:this.state.user,psw:this.state.pass});
             console.log(ret)
             if(ret===null){
                 this.setState({
@@ -53,13 +55,20 @@ export default class LoginForm extends React.Component{
                 console.log(this.state.isLoading);
                 return;
             }else{
-                console.log(this.state.isLoading);
-                return;
-            }
-            }else{
+                this.setState({
+                    isLoading: false
+                })
                 
-            }    
+            }
+        }else{
+                
+        }    
     }
+
+
+
+
+    
 
     passChangeHandler(evt){
         this.setState({

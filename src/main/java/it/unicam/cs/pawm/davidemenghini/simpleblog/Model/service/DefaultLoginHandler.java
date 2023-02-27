@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +43,7 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
     @Override
     public boolean checkUser(String username) {
         this.user = this.userRepo.findDefaultUserByUsername(username);
+        logger.info("user check: "+!Objects.isNull(this.user)+" username: "+username);
         return !Objects.isNull(this.user);
     }
 
@@ -57,6 +59,7 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
     @Override
     public String saltAndSecretPsw(String psw) {
         this.securePsw = this.generateHashedPsw(psw);
+        logger.info("DefaultLoginHandler s&sp: "+this.securePsw);
         this.hasBeenSaltAndSecret = true;
         return this.securePsw;
     }
@@ -65,12 +68,14 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
     public DefaultUser login() {
         UUID uuid = UUID.randomUUID();
         String sessionId = uuid.toString();
-        this.userRepo.setEnableAndSession_idForUser(sessionId,1,this.user.getId());
+        LocalDateTime now = LocalDateTime.now();
+        this.userRepo.setEnableAndSession_idForUser(sessionId,1,now,this.user.getId());
         String csrfToken = this.generateToken();
         int idu = this.user.getId();
         this.saveCsrfToken(csrfToken,idu);
         this.user.setEnabled(1);
         this.user.setSession_id(sessionId);
+        this.user.setExpiration_time(now);
         logger.info("L'utente "+this.user.getId()+" è online("+this.user.getEnabled()+")...");
         return this.user;
     }
@@ -81,7 +86,7 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
         logger.info("All csrf tokens:");
         this.csrfRepo.findAll().forEach(x -> logger.info(x.toString()));
         if (user.getSession_id().equals(session_id) && user.getEnabled() == 1) {
-            this.userRepo.setEnableAndSession_idForUser(null, 0, user.getId());
+            this.userRepo.setEnableAndSession_idForUser(null, 0, null,user.getId());
             this.deleteCsrfToken(user.getId());
         }
     }

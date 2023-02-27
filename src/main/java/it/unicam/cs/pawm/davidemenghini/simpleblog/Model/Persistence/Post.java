@@ -33,4 +33,10 @@ public class Post {
     @Column(name="title_text")
     private byte[] title_text;
 
+    @Column(name="like_number")
+    private int likeNumber;
+
+    @Column(name="dislike_number")
+    private int dislikeNumber;
+
 }

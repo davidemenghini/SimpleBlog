@@ -24,4 +24,9 @@ public interface PostService {
     Post readPost(int idPost);
 
     List<Post> getRandomPosts(int randomPost);
+
+
+    boolean isLikedToUser(int idUser);
+
+    boolean isDislikedToUser(int idUser);
 }

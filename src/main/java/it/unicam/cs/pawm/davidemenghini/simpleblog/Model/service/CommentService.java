@@ -2,6 +2,7 @@ package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service;
 
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Comment;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultCommentCrudRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * Questa interfaccia definisce il comportamento del servizio che si occupa del repository {@link DefaultCommentCrudRepository}.
  *
  */
+@Service
 public interface CommentService {
 
     /**
@@ -19,6 +21,11 @@ public interface CommentService {
      */
 
     List<Comment> getCommentFromIdPost(int id);
+
+
+    boolean isLikedToUser(int idUser);
+
+    boolean isDislikedToUser(int idUser);
 
 
 

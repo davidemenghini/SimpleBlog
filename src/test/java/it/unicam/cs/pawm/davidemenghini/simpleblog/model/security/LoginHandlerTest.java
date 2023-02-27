@@ -102,6 +102,7 @@ public class LoginHandlerTest {
 
     private boolean checkUser(){
         DefaultUser expectedUser = this.getExpectedUser();
+        System.out.println(expectedUser.getUsername());
         return this.sessionHandlerUtil.checkUser(expectedUser.getUsername());
     }
 

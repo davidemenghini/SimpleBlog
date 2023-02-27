@@ -13,6 +13,10 @@ export default class Post{
 
     isBase64;
 
+    likeNumber = 0;
+
+    dislikeNumber = 0;
+
     constructor(id,ida,text,title){
         
         this.id = id;
@@ -77,6 +81,23 @@ export default class Post{
 
     getTitleText(){
         return this.title_text;
+    }
+
+
+    setDislikeNumber(dislike_number){
+        this.dislikeNumber = dislike_number;
+    }
+
+    getDislikeNumber(){
+        return this.dislikeNumber;
+    }
+
+    setLikeNumber(likeNumber){
+        this.likeNumber = likeNumber;
+    }
+
+    getLikeNumber(){
+        return this.likeNumber;
     }
 
 

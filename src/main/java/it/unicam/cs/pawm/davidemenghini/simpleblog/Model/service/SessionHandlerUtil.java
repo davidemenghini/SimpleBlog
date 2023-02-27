@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
- * Questa interfaccia serve per permettere ad un utente di effettuare il login ed il logout.
+ * Questa interfaccia serve per permettere a un utente di effettuare il login e il logout.
  */
 @Component
 @Service

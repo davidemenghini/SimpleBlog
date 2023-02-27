@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 /**
  * Questa interfaccia permette di collegarsi al repository dell'utente.
  * Permette di eseguire operazioni CRUD per l'entità {@link DefaultUser}.
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface DefaultUserCrudRepository extends CrudRepository<DefaultUser,Integer>, JpaRepository<DefaultUser,Integer> {
 
 
+    @Query(nativeQuery = true, value = "SELECT * FROM simple_blog.default_user as u WHERE u.username=?1")
     DefaultUser findDefaultUserByUsername(String username);
 
 
@@ -25,8 +28,8 @@ public interface DefaultUserCrudRepository extends CrudRepository<DefaultUser,In
      * @return Il nuovo stato dell'utente.
      */
     @Modifying
-    @Query(value = "update DefaultUser as u set u.session_id=?1, u.enabled=?2 where u.id=?3")
-    int setEnableAndSession_idForUser(String session_id, int enable,int id);
+    @Query(value = "update DefaultUser as u set u.session_id=?1, u.enabled=?2,u.expiration_time=?3 where u.id=?4")
+    int setEnableAndSession_idForUser(String session_id, int enable, LocalDateTime date, int id);
 
 
 
