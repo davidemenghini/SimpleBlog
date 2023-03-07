@@ -2,6 +2,10 @@ DROP TABLE IF EXISTS simple_blog.post;
 DROP TABLE IF EXISTS simple_blog.default_user;
 DROP TABLE IF EXISTS simple_blog.comment;
 DROP TABLE IF EXISTS simple_blog.my_user_csrf_token;
+DROP TABLE IF EXISTS simple_blog.dislike_post;
+DROP TABLE IF EXISTS simple_blog.like_post;
+DROP TABLE IF EXISTS simple_blog.dislike_comment;
+DROP TABLE IF EXISTS simple_blog.like_comment;
 
 CREATE TABLE IF NOT EXISTS Comment(
                                       id int primary key auto_increment,

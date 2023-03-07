@@ -11,23 +11,22 @@ export default class UserApi{
 
     #logoutUrl = "http://localhost:8080/api/private/logout/"
 
-    constructor(){
-
-    }
 
     async makeLogin(userAndPass){
         var user = userAndPass.user
         var psw = userAndPass.psw
-        axios.post(this.#loginUrl,{
+        let returningValue = null;
+        await axios.post(this.#loginUrl,{
             user:user, psw:psw
         },{
             withCredentials: true
         }).then(function (response){
-            return response.data;
+            console.log(response)
+            returningValue = response.data;
         }).catch(function (error){
             console.log(error);
-            return null;
         });
+        return returningValue;
     }
 
 
@@ -64,7 +63,7 @@ export default class UserApi{
         var url = this.#logoutUrl;
         var user = usernameAndIdUser.user
         var id = usernameAndIdUser.id
-        axios.post(url,{
+        await axios.post(url,{
             user:user,id:id
         },{
             withCredentials: true

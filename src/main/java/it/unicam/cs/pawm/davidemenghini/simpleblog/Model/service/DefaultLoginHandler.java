@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -87,7 +86,8 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
         this.csrfRepo.findAll().forEach(x -> logger.info(x.toString()));
         if (user.getSession_id().equals(session_id) && user.getEnabled() == 1) {
             this.userRepo.setEnableAndSession_idForUser(null, 0, null,user.getId());
-            this.deleteCsrfToken(user.getId());
+            this.csrfRepo.deleteById(user.getId());
+            //this.deleteCsrfToken(user.getId());
         }
     }
 
@@ -95,11 +95,7 @@ public class DefaultLoginHandler implements SessionHandlerUtil{
     @Override
     public String getCsrfToken(int idu) {
         Optional<UserCsrfToken> opt = this.csrfRepo.findById(idu);
-        if (opt.isPresent()){
-            return opt.get().getToken();
-        }else{
-            return "";
-        }
+        return (opt.isPresent()) ? opt.get().getToken() : "";
     }
 
     @Override

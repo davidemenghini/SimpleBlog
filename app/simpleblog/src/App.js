@@ -25,7 +25,7 @@ export default class App extends Component{
 
       render(){
         return(
-          <div style={{backgroundColor: '#393B41', minHeight: '100vh', height: '100%', width: '100%', margin: 0}}>
+          <div style={{backgroundColor: '#393B41', minHeight: '100vh', height: '100vh', width: '100vw', margin: 0}}>
             <div style={{border: '2px solid gray'}}>
                   <button type="button" className="btn btn-dark" onClick={this.goToHome}>Home</button>
                   {this.state.isUserLogged===true ? 
@@ -70,14 +70,16 @@ export default class App extends Component{
         }).then(function (response){
           var p1Obj = JSON.parse(response.data[0])
           var p2Obj = JSON.parse(response.data[1])
+          console.log(p1Obj.id+": "+p1Obj.dislikeNumber)
+          console.log(p2Obj.id+": "+p2Obj.dislikeNumber)
           var p1 = new Post(p1Obj.id,p1Obj.id_author,p1Obj.data_text,p1Obj.title_text);
-          p1.setLikeNumber(p1Obj.dislikeNumber);
-          p1.setDislikeNumber(p1Obj.likeNumber);
+          p1.setLikeNumber(p1Obj.likeNumber);
+          p1.setDislikeNumber(p1Obj.dislikeNumber);
           p1.setRawDataImg(p1Obj.data_img)
           var p2 = new Post(p2Obj.id,p2Obj.id_author,p2Obj.data_text,p2Obj.title_text);
           p2.setRawDataImg(p2Obj.data_img);
-          p2.setLikeNumber(p2Obj.dislikeNumber);
-          p2.setDislikeNumber(p2Obj.likeNumber);
+          p2.setLikeNumber(p2Obj.likeNumber);
+          p2.setDislikeNumber(p2Obj.dislikeNumber);
           console.log([p1,p2])
           self.setState({
             posts: [p1,p2]
@@ -91,10 +93,12 @@ export default class App extends Component{
 
       async makeLogout(){
         var userApi = new UserApi();
+        console.log({user:sessionStorage.getItem("username"), id:sessionStorage.getItem("idUser")})
         var ret = await userApi.makeLogout({user:sessionStorage.getItem("username"), id:sessionStorage.getItem("idUser")})
         if(ret !== null || ret!==undefined){
           this.setState({
-            isUserLogged: false
+            isUserLogged: false,
+            showLogin: false
           });
           console.log("ok");
         }else{
@@ -105,27 +109,20 @@ export default class App extends Component{
       async loginClick(u,p){
         console.log("parent: "+u+" "+p)
         var userApi = new UserApi();
-        this.setState({
-            isLoading: true
-        })
         if(u!== "" && p !== ""){
-            var ret = new UserApi().makeLogin({user:u,psw:p});
+            let ret = await userApi.makeLogin({user:u,psw:p});
             console.log(ret)
-            ret.then(function(response){
-              console.log("promise then: "+response)
-            });
             if(ret===null || ret===undefined){
-              console.log("errore nel login")
-                console.log(this.state.isLoading);
-                return;
-            }else{
-                var csrf_token = await new UserApi().getCsrfToken({user:u,psw:p});
+              console.log("errore nel login");
+              }else{
+                var csrf_token = await userApi.getCsrfToken({user:u,psw:p});
+                console.log(ret)
                 sessionStorage.setItem("idUser",ret.id);
                 sessionStorage.setItem("username",u);
                 this.setState({
                     isUserLogged: true
                 })
-            }
+              }
         }else{
                 
         }    

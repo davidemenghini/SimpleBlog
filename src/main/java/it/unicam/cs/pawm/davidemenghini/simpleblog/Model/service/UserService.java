@@ -11,5 +11,8 @@ public interface UserService {
     String transformUserToJson(DefaultUser user);
 
 
+    DefaultUser getUserFromUsername(String username);
+
+
 
 }

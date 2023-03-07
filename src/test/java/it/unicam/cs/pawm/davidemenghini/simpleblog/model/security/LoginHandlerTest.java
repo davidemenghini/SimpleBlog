@@ -78,7 +78,6 @@ public class LoginHandlerTest {
     @Test
     @Order(6)
     public void logoutTest(){
-        //DefaultUser user = this.makeLogin();
         DefaultUser user = this.userRepo.findDefaultUserByUsername("utente1");
         this.sessionHandlerUtil.logout("utente1",user.getSession_id());
         DefaultUser actualUser = this.userRepo.findDefaultUserByUsername("utente1");

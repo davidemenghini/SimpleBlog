@@ -2,6 +2,7 @@ import React,{ Component } from "react";
 import CommentComponent from "./CommentComponent";
 import axios from "axios";
 import Comment from "./ViewObjects/Comment";
+import PostApi from "./ViewObjects/PostApi";
 
 export default class PostComponent extends Component{
 
@@ -16,6 +17,7 @@ export default class PostComponent extends Component{
         this.showAddNewComment = this.showAddNewComment.bind(this);
         this.renderAddNewComment = this.renderAddNewComment.bind(this);
         this.addNewLike = this.addNewLike.bind(this);
+        this.addNewDislike = this.addNewDislike.bind(this);
         this.state = {
             id: props.id,
             ida: props.ida,
@@ -27,15 +29,44 @@ export default class PostComponent extends Component{
             likeNumber: props.likeNumber,
             dislikeNumber: props.dislikeNumber,
             showAddNewComment: false,
-            isUserLogged: props.isUserLogged
+            isUserLogged: props.isUserLogged,
+            isLikedToUser: false,
+            isDislikedToUser: false,
+            showLikeAlert: false,
+            showDislikeAlert: false
         };
 
     }
 
+    
+
+
+    async componentDidUpdate(prevProps, prevState,snapshot){
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        if(this.props.isUserLogged !== prevProps.isUserLogged){
+            this.setState({
+                isUserLogged: this.props.isUserLogged
+            });
+            if(this.props.isUserLogged===true){
+                await delay(2000)
+                var postApi = new PostApi();
+                var respIsLiked = await postApi.isLikedToUser(sessionStorage.getItem('idUser'),this.state.id);
+                var respIsDisliked = await postApi.isDislikedToUser(sessionStorage.getItem('idUser'),this.state.id)
+                respIsLiked==='yes' ? this.setState({isLikedToUser: true}) : this.setState({isLikedToUser: false})           
+                respIsDisliked==='yes'? this.setState({ isDislikedToUser: true}):this.setState({isDislikedToUser: false}) 
+            }else{
+                this.setState({
+                    isLikedToUser: false,
+                    isDislikedToUser: false
+                });
+            }
+            
+        }
+    }
 
     render(props){
         return (
-        <div className="rounded shadow p-3 mb-5" style={{backgroundColor: 'gray' ,marginLeft: '25%', marginRight: '25%', marginTop: '10pt'}}>
+        <div className="rounded shadow p-3 mb-5" style={{backgroundColor: 'gray',float:'center' ,marginLeft: '25%', marginRight: '25%'}}>
             <div style={{textAlign: 'center'}}>
                 <h3>{this.state.title}</h3>
                 <span>{this.state.text}</span>
@@ -45,11 +76,17 @@ export default class PostComponent extends Component{
             <br></br>
             <div>
                 <span style={{}}>
-                    <span className="text-light bg-black" style={{float:'left', marginLeft:'6%'}} onClick={}>{this.state.likeNumber} mi piace</span>
-                    <span className="text-light bg-black" style={{float:'right', marginRight:'6%'}}>{this.state.dislikeNumber} non mi piace</span>
+                    {this.state.isLikedToUser===false ? 
+                        <span className="text-light bg-black" style={{float:'left', marginLeft:'6%'}} >{this.state.likeNumber} mi piace</span>:
+                        <span className="text-white bg-danger" style={{float:'left', marginLeft:'6%'}} >{this.state.likeNumber} mi piace</span>}
+                    {this.state.isDislikedToUser===false ? 
+                        <span className="text-light bg-black" style={{float:'right', marginRight:'6%'}}>{this.state.dislikeNumber} non mi piace</span>:
+                        <span className="text-white bg-danger" style={{float:'right', marginRight:'6%'}}>{this.state.dislikeNumber} non mi piace</span>}
                     <br></br>
-                    <button className="btn btn-light" style={{marginLeft:'5%'}}>mi piace!</button>
-                    <button style={{float:'right', marginRight:'5%'}} className="btn btn-dark">non mi piace!</button>
+                    {this.state.isLikedToUser===false ? <button value="mi piace!" className="btn btn-light" onClick={(evt)=>{this.addNewLike(evt)}} style={{marginLeft:'5%'}}>mi piace!</button> : 
+                        <button value="annulla mi piace!" className="btn btn-light" onClick={(evt)=>{this.addNewLike(evt)}} style={{marginLeft:'5%'}}>annulla mi piace!</button>}
+                    {this.state.isDislikedToUser===false ? <button value="non mi piace!" style={{float:'right', marginRight:'5%'}} className="btn btn-dark" onClick={(evt)=>this.addNewDislike(evt)}>non mi piace!</button> : 
+                        <button value="annulla non mi piace!"style={{float:'right', marginRight:'5%'}} className="btn btn-dark" onClick={(evt)=>this.addNewDislike(evt)}> annulla non mi piace!</button> }
                 </span>
                 <br></br>
                 <br></br>
@@ -72,13 +109,62 @@ export default class PostComponent extends Component{
         </div>)
     }
 
+
     async addNewLike(evt){
-        idUser = sessionStorage.getItem("idUser");
-        username = sessionStorage.getItem("username");
-        if(username!== undefined && idUser===undefined){
-            //TODO 
+        var idUser = sessionStorage.getItem("idUser");
+        var username = sessionStorage.getItem("username");
+        console.log('controllando id e username...'+ evt.target.value)
+        if(username!== undefined && idUser!==undefined){
+            console.log("value: "+evt.target.value)
+            if(evt.target.value==='mi piace!'){
+                var apiPost = new PostApi();
+                var ret = await apiPost.addLikePost(this.state.id,idUser);
+                if(ret===true){
+                    this.setState({likeNumber: this.state.likeNumber+1,isLikedToUser: true}) 
+                }else{
+
+                }
+            }else{
+                var apiPost = new PostApi();
+                var ret = await apiPost.removeLikePost(this.state.id,idUser);
+                if(ret===true){
+                    this.setState({likeNumber: this.state.likeNumber-1,isLikedToUser: false}) 
+                }else{
+                    
+                }
+            }
+           
         }
     }
+
+
+    async addNewDislike(evt){
+        var idUser = sessionStorage.getItem("idUser");
+        var username = sessionStorage.getItem("username");
+        console.log('controllando id e username...')
+        if(username!== undefined && idUser!==undefined){
+            if(evt.target.value==='non mi piace!'){
+                var apiPost = new PostApi();
+                var ret = await apiPost.addDislikeToPost(this.state.id,idUser);
+                if(ret===true){
+                    this.setState({dislikeNumber: this.state.dislikeNumber+1,isDislikedToUser: true})
+                }else{
+
+                }
+                    
+            }else{
+                var apiPost = new PostApi();
+                var ret = await apiPost.removeDislikePost(this.state.id,idUser);
+                if(ret===true){
+                    this.setState({dislikeNumber: this.state.dislikeNumber-1,isDislikedToUser: false}) 
+                }else{
+                    
+                }
+            }
+           
+        }
+    }
+
 
     renderMultipleComments(){
         return (<div>
@@ -107,7 +193,6 @@ export default class PostComponent extends Component{
             if(response.data.length === 0){
                 this.updateEmptyComments();
             }else{
-                console.log(response)
                 this.updateNotEmptyComments(response.data)
             }
         }).catch(error=>{
@@ -134,17 +219,13 @@ export default class PostComponent extends Component{
         var arr = [];
         console.log("size: "+commentsJsonList.length+"\n updateNotEmptyComm: "+commentsJsonList)
         for(var i=0; i<commentsJsonList.length;i++){
-            console.log(i)
-            console.log("first comments array type "+typeof(commentsJsonList[0]))
             const obj = JSON.parse(commentsJsonList[i])
-            console.log(obj)
             c.setId(obj.id);
             c.setIdPost(obj.idPost);
             c.setIda(obj.idAuthor);
             c.setDislikeNumber(obj.dislike_number);
             c.setLikeNumber(obj.like_number);
             c.setText(obj.textComment);
-            console.log("C: "+c)
             arr[i] = c
             c = new Comment();
         }

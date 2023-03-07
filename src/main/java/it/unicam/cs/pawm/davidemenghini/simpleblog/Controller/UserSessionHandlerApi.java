@@ -3,29 +3,25 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.DefaultUserCheckerChecker;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.SessionHandlerUtil;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.UserService;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.UserSessionChecker;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.*;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @CrossOrigin(allowCredentials = "true",exposedHeaders = "Set-Cookie, csrf_token", origins = "http://localhost:3000")
 public class UserSessionHandlerApi {
 
@@ -36,24 +32,11 @@ public class UserSessionHandlerApi {
     @Autowired
     private UserService userService;
 
-    private final UserSessionChecker userSessionChecker = new DefaultUserCheckerChecker();
 
-    private final BiFunction<String[],Boolean,ResponseCookie> createCookie = (cookie,isHttpOnly)->{
-        if(isHttpOnly){
-            return ResponseCookie.from(cookie[0],cookie[1])
-                    .httpOnly(isHttpOnly)
-                    .secure(true)
-                    .sameSite("None")
-                    .domain(".localhost")
-                    .path("/api/")
+    @Autowired
+    private UserSessionChecker userSessionChecker;
 
-                    .maxAge(3600)
-                    .build();
-        }else{
-            return ResponseCookie.from(cookie[0],cookie[1])
-                    .build();
-        }
-    };
+    private final CookieCreator cookieCreator = CookieCreator::cookie;
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserSessionHandlerApi.class);
@@ -77,12 +60,8 @@ public class UserSessionHandlerApi {
             logger.info("errore nel login...");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        String[] a = new String[2];
-        a[0] = "session_id";
-        a[1] = u.getSession_id();
-        httpServletResponse.setHeader(HttpHeaders.SET_COOKIE,this.createCookie.apply(a,true).toString());
+        httpServletResponse.setHeader(HttpHeaders.SET_COOKIE,this.cookieCreator.createCookie(new String[]{"session_id",u.getSession_id()},true).toString());
         String jsonUser = this.fromObjToJson(u);
-        //headers.add("csrf_token",this.sessionHandlerUtil.getCsrfToken(u.getId()));
         return new ResponseEntity<>(jsonUser, HttpStatus.OK);
     }
 
@@ -96,29 +75,34 @@ public class UserSessionHandlerApi {
 
     @RequestMapping(value = "/api/public/csrf/", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> getCsrfToken(@RequestBody String userAndPass, HttpServletResponse httpServletResponse){
+    public ResponseEntity<String> getCsrfToken(HttpServletRequest request, @RequestBody String userAndPass, HttpServletResponse httpServletResponse){
         logger.info("retrieving csrf token");
+        Cookie session_id = Arrays.stream(request.getCookies())
+                .filter(x->x.getName().equals("session_id"))
+                .findFirst().orElse(null);
         Map<String,String> jsonValues = this.getJsonValuesFromString(userAndPass);
-        DefaultUser u = this.loginFunction.apply(jsonValues.get("username"), jsonValues.get("psw"));
-        if(Objects.isNull(u)){
-            logger.info("errore nel login...");
+        DefaultUser u = this.userService.getUserFromUsername(jsonValues.get("username"));
+        if(Objects.isNull(u) || Objects.isNull(session_id)){
+            logger.error("errore nel recupero dell'username...");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } else if (u.getSession_id().equals(session_id.getValue())) {
+            logger.info("getCsrf: "+this.sessionHandlerUtil.getCsrfToken(u.getId()));
+            httpServletResponse.setHeader(HttpHeaders.SET_COOKIE,this.cookieCreator.createCookie(new String[] {"csrf_token",this.sessionHandlerUtil.getCsrfToken(u.getId())},true).toString());
+            return new ResponseEntity<>("ok",HttpStatus.OK);
         }
-        String[] a = new String[2];
-        a[0] = "csrf_token";
-        a[1] = this.sessionHandlerUtil.getCsrfToken(u.getId());
-        HttpHeaders headers = new HttpHeaders();
-        httpServletResponse.setHeader(HttpHeaders.SET_COOKIE,this.createCookie.apply(a,true).toString());
-        return new ResponseEntity<>("ok",headers,HttpStatus.OK);
+        return null;
     }
 
     @RequestMapping(value="/api/private/logout/", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> handleLogout(@CookieValue(name = "session_id") String session_id, @CookieValue(name = "csrf_token") String csrf_token, @RequestBody String idAndUser){
+    public ResponseEntity<String> handleLogout(HttpServletRequest request, @RequestBody String idAndUser){
         logger.info("handling logout...");
         Map<String,String> jsonValues = this.getJsonValuesFromIdAndUser(idAndUser);
-        if( Objects.nonNull(jsonValues) && this.userSessionChecker.checkSession(session_id,csrf_token, Integer.parseInt(jsonValues.get("id")))){
-            this.sessionHandlerUtil.logout(jsonValues.get("username"),session_id);
+        Map<String,String> cookies = Arrays.stream(request.getCookies())
+                .filter(x->x.getName().equals("session_id") || x.getName().equals("csrf_token"))
+                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        if(this.userSessionChecker.checkSession(cookies.get("session_id"),cookies.get("csrf_token"), Integer.parseInt(jsonValues.get("id")))){
+            this.sessionHandlerUtil.logout(jsonValues.get("username"),cookies.get("session_id"));
             return new ResponseEntity<>("ok",HttpStatus.OK);
         }else{
             return new ResponseEntity<>("error",HttpStatus.FORBIDDEN);
@@ -134,16 +118,12 @@ public class UserSessionHandlerApi {
         ret.put("username", m.get("user"));
         ret.put("id", m.get("id"));
         System.out.println(ret.toString());
-        return null;
+        return ret;
     }
 
     private Map<String, String> getJsonValuesFromString(String userAndPass) {
-        logger.info("login value: "+userAndPass);
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String,String> m = new Gson().fromJson(userAndPass, type);
-        m.forEach((x,y)->logger.info("x: "+x+" y: "+y));
-        logger.info("m.toString(): "+m.toString());
-        //Map values = new Gson().fromJson(m.get("userAndPass"),Map.class);
         Map<String,String> ret = new HashMap<>();
         ret.put("username", m.get("user"));
         ret.put("psw", m.get("psw"));
@@ -155,13 +135,9 @@ public class UserSessionHandlerApi {
         logger.info("logout value: "+idAndUser);
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String,String> m = new Gson().fromJson(idAndUser, type);
-        m.forEach((x,y)->logger.info("x: "+x+" y: "+y));
-        logger.info("m.toString(): "+m.toString());
-        //Map values = new Gson().fromJson(m.get("userAndPass"),Map.class);
         Map<String,String> ret = new HashMap<>();
         ret.put("username", m.get("user"));
         ret.put("psw", m.get("psw"));
-        System.out.println(ret.toString());
         return ret;
     }
 

@@ -24,4 +24,9 @@ public class DefaultUserService implements UserService{
         jsonObject.addProperty("username",user.getUsername());
         return jsonObject.toString();
     }
+
+    @Override
+    public DefaultUser getUserFromUsername(String username) {
+        return this.userRepo.findDefaultUserByUsername(username);
+    }
 }

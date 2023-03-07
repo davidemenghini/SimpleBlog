@@ -20,4 +20,6 @@ public interface DefaultPostCrudRepository extends CrudRepository<Post,Integer>,
     List<Post> readRandomPost(int randomPost);
 
 
+
+    //void saveNewEntity(Post newPost);
 }

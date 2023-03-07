@@ -16,7 +16,6 @@ public class LikePost {
 
     @Column(name = "id")
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
 

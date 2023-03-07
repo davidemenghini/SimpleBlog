@@ -26,7 +26,15 @@ public interface PostService {
     List<Post> getRandomPosts(int randomPost);
 
 
-    boolean isLikedToUser(int idUser);
+    boolean isLikedToUser(int idUser,int idPost);
 
-    boolean isDislikedToUser(int idUser);
+    boolean isDislikedToUser(int idUser,int idPost);
+
+    void addLikeToPost(int idu, int idPost);
+
+    void addDislikeToPost(int idu, int idPost);
+
+    void removeLikeToPost(int idu,int idPost);
+
+    void removeDislikeToPost(int idu,int idPost);
 }

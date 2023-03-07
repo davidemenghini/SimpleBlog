@@ -23,12 +23,19 @@ public interface CommentService {
     List<Comment> getCommentFromIdPost(int id);
 
 
-    boolean isLikedToUser(int idUser);
+    boolean isLikedToUser(int idUser,int idComment);
 
-    boolean isDislikedToUser(int idUser);
+    boolean isDislikedToUser(int idUser,int idComment);
 
 
+    void addLikeToUser(int idUser,int idComment);
 
+
+    void addDislikeToUser(int idUser,int idComment);
+
+    void removeLikeToUser(int idUser,int idComment);
+
+    void removeDislikeToUser(int idUser,int idComment);
 
 
 }

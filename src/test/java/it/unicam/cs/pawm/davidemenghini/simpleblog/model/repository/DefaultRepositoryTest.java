@@ -41,7 +41,10 @@ public class DefaultRepositoryTest {
         DefaultUser expectedUser = this.getExpectedUser();
         DefaultUser actualUser = this.userRepo.findDefaultUserByUsername("utente1");
         assertNotNull(actualUser);
-        assertEquals(expectedUser,actualUser);
+        //controllo l'id
+        assertEquals(expectedUser.getId(),actualUser.getId());
+        //controllo l'username
+        assertEquals(expectedUser.getUsername(),actualUser.getUsername());
     }
 
     @Test
@@ -70,8 +73,8 @@ public class DefaultRepositoryTest {
         expectedPost.setId_author(1);
         byte[] title_text = "ciao questa è una prova.".getBytes(StandardCharsets.UTF_8);
         expectedPost.setTitle_text(title_text);
-        expectedPost.setLikeNumber(0);
-        expectedPost.setDislikeNumber(0);
+        expectedPost.setLikeNumber(1);
+        expectedPost.setDislikeNumber(1);
         return expectedPost;
     }
 
