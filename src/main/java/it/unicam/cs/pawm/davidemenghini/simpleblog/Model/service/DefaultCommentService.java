@@ -1,20 +1,14 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service;
-
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Controller.CommentApi;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.*;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Transactional
 public class DefaultCommentService implements CommentService{
@@ -78,7 +72,7 @@ public class DefaultCommentService implements CommentService{
         Optional<Comment> commentOpt = this.commentRepo.findById(idComment);
         if(commentOpt.isPresent()){
             Comment comment = commentOpt.get();
-            comment.setLike_number(comment.getDislike_number()+1);
+            comment.setDislike_number(comment.getDislike_number()+1);
             DislikeComment newDislikeComment = generateNewDislike(id,idUser,idComment);
             this.commentRepo.save(comment);
             this.dislikeCommentRepo.save(newDislikeComment);
@@ -93,7 +87,8 @@ public class DefaultCommentService implements CommentService{
             Optional<Comment> p = this.commentRepo.findById(idComment);
             if(p.isPresent()){
                 Comment newComment = p.get();
-                newComment.setLike_number(newComment.getLike_number()-1);
+                int newLikeNumber = Math.max(newComment.getLike_number() - 1, 0);
+                newComment.setLike_number(newLikeNumber);
                 this.commentRepo.save(newComment);
             }
         }
@@ -108,9 +103,22 @@ public class DefaultCommentService implements CommentService{
             Optional<Comment> p = this.commentRepo.findById(idComment);
             if(p.isPresent()){
                 Comment newComment = p.get();
-                newComment.setDislike_number(newComment.getDislike_number()-1);
+                int newDislikeNumber = Math.max(newComment.getDislike_number() - 1, 0);
+                newComment.setDislike_number(newDislikeNumber);
                 this.commentRepo.save(newComment);
             }
+        }
+    }
+
+    @Override
+    public boolean checkIfIdCommentExist(int id) {
+        return !Objects.equals(this.commentRepo.findById(id),Optional.empty());
+    }
+
+    @Override
+    public void createNewComment(Comment c) {
+        if (Objects.nonNull(c)){
+            this.commentRepo.save(c);
         }
     }
 

@@ -6,6 +6,7 @@ import PostComponent from './PostComponent';
 import Post from './ViewObjects/Post';
 import axios from "axios"
 import UserApi from './ViewObjects/UserApi';
+import AddPostComponent from './AddPostComponent';
 export default class App extends Component{
 
 
@@ -18,7 +19,8 @@ export default class App extends Component{
         this.loginClick = this.loginClick.bind(this);
         this.state = {
           showLogin: false,
-          isUserLogged: false
+          isUserLogged: false,
+          showAddNewPost: false
         }
       }
 
@@ -35,6 +37,7 @@ export default class App extends Component{
             <br></br>
             <div style={{backgroundColor: '#393B41'}}>
               {this.state.showLogin===true && this.state.isUserLogged===false ? <LoginForm isLogged = {this.isLogged} isUserLogged = {true} loginFunc = {this.loginClick}/> : undefined }
+              {this.state.showAddNewPost=== true? <AddPostComponent isUserLogged={this.state.isUserLogged}/> : null}
               {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[0].getLikeNumber()} dislikeNumber={this.state.posts[0].getDislikeNumber()} title={this.state.posts[0].getTitleText()} text ={this.state.posts[0].getDataText()} img = {this.state.posts[0].getBase64DataImg()} id_author = {this.state.posts[0].getIda()} id = {this.state.posts[0].getId()}/>: null}
               {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[1].getLikeNumber()} dislikeNumber={this.state.posts[1].getDislikeNumber()} title={this.state.posts[1].getTitleText()} text ={this.state.posts[1].getDataText()} img = {this.state.posts[1].getBase64DataImg()} id_author = {this.state.posts[1].getIda()} id = {this.state.posts[1].getId()}/>: null}
             </div>

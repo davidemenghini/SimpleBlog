@@ -17,10 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,6 +48,44 @@ public class CommentApi {
     public ResponseEntity<List<String>> getCommentFromId(@PathVariable String id){
         List<String> jsonList = this.fromObjectsToStringList(this.commentService.getCommentFromIdPost(Integer.parseInt(id)));
         return new ResponseEntity<>(jsonList,HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/api/private/comment/add/")
+    @ResponseBody
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    public ResponseEntity<Void> createComment(HttpServletRequest request, @RequestBody Map<String,Comment> body){
+        Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
+        logger.info("body: "+body.get("comment"));
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), body.get("comment").getIdAuthor())){
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
+        }else{
+            this.commentService.createNewComment(body.get("comment"));
+            return new ResponseEntity<>(null,HttpStatus.OK);
+        }
+    }
+
+    private Comment extractCommentFromJson(String body) {
+        Comment m = new Gson().fromJson(body, Comment.class);
+        Comment c = new Comment();
+        c.setId(this.generateIdComment());
+        c.setLike_number(0);
+        c.setDislike_number(0);
+        c.setIdPost(m.getIdPost());
+        c.setTextComment(m.getTextComment());
+        return c;
+    }
+
+    private int generateIdComment(){
+        Random random=new Random();
+        int id;
+        do{
+            id=random.nextInt(30000);
+        }while (this.checkIfIdCommentExists(id));
+        return id;
+    }
+
+    private boolean checkIfIdCommentExists(int id) {
+        return this.commentService.checkIfIdCommentExist(id);
     }
 
 
@@ -172,8 +207,8 @@ public class CommentApi {
         if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
         }else {
-            if(!this.commentService.isLikedToUser(idu,idComment) && this.commentService.isDislikedToUser(idu,idComment)){
-                this.commentService.removeDislikeToUser(idu,idComment);
+            if(this.commentService.isLikedToUser(idu,idComment) && !this.commentService.isDislikedToUser(idu,idComment)){
+                this.commentService.removeLikeToUser(idu,idComment);
                 return new ResponseEntity<>(true,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);

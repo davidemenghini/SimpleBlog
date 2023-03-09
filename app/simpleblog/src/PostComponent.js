@@ -3,6 +3,7 @@ import CommentComponent from "./CommentComponent";
 import axios from "axios";
 import Comment from "./ViewObjects/Comment";
 import PostApi from "./ViewObjects/PostApi";
+import CommentApi from "./ViewObjects/CommentApi";
 
 export default class PostComponent extends Component{
 
@@ -18,6 +19,8 @@ export default class PostComponent extends Component{
         this.renderAddNewComment = this.renderAddNewComment.bind(this);
         this.addNewLike = this.addNewLike.bind(this);
         this.addNewDislike = this.addNewDislike.bind(this);
+        this.addNewComment = this.addNewComment.bind(this);
+        this.updateNewCommentText = this.updateNewCommentText.bind(this);
         this.state = {
             id: props.id,
             ida: props.ida,
@@ -33,11 +36,36 @@ export default class PostComponent extends Component{
             isLikedToUser: false,
             isDislikedToUser: false,
             showLikeAlert: false,
-            showDislikeAlert: false
+            showDislikeAlert: false,
+            newCommentText: ""
         };
 
     }
 
+    async addNewComment(evt){
+        if(this.state.newCommentText!==""){
+            let idUser = sessionStorage.getItem("idUser");
+            let utf8Encode = new TextEncoder();
+            let textArr = utf8Encode.encode(this.state.newCommentText)
+            let ta = []
+            for(let i=0;i<textArr.length;i++){
+                ta[i] = textArr[i]
+            }
+            var comment = {
+                idPost: this.state.id,
+                idAuthor: idUser,
+                like_number: 0,
+                dislike_number: 0,
+                textComment: ta 
+            };
+            await new CommentApi().createComment(comment);
+        }
+    }
+
+    updateNewCommentText(evt){
+        this.setState({newCommentText: evt.target.value})
+        evt.preventDefault();
+    }
     
 
 
@@ -246,10 +274,11 @@ export default class PostComponent extends Component{
     renderAddNewComment(){
         return (
         <div style={{textAlign:'center'}}>
-            <input type="text" placeholder =" inserisci qui il tuo commento..." className="form-control">
+            <input type="text" placeholder =" inserisci qui il tuo commento..." className="form-control" onChange={(evt)=>this.updateNewCommentText(evt
+                )}>
             </input>
             <br></br>
-            <button type="button" className="btn btn-light">inserisci commento</button>
+            <button type="button" className="btn btn-light" onClick={(evt)=>this.addNewComment(evt)}>inserisci commento</button>
         </div>)
     }
 }

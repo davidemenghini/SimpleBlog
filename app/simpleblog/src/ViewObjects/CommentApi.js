@@ -3,21 +3,22 @@ import axios from "axios";
 export default class CommentApi{
 
 
-    #addLikeUrl = "private/comment/like/add/";
+    #addLikeUrl = "http://localhost:8080/api/private/comment/like/add/";
 
-    #addDislikeUrl = "private/comment/dislike/add/";
+    #addDislikeUrl = "http://localhost:8080/api/private/comment/dislike/add/";
 
-    #removeDislikeUrl = "private/comment/dislike/remove/";
+    #removeDislikeUrl = "http://localhost:8080/api/private/comment/dislike/remove/";
 
-    #removelikeUrl = "private/comment/like/remove/";
+    #removelikeUrl = "http://localhost:8080/api/private/comment/like/remove/";
 
+    #createNewComment = "http://localhost:8080/api/private/comment/add/"
 
 
     async addLike(idUser,idComment){
         return await axios.post(this.#addLikeUrl+idComment+"/",{
             idUser   
         },{
-            withCrediental:true
+            withCredentials:true
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -28,10 +29,10 @@ export default class CommentApi{
 
 
     async removeLike(idUser,idComment){
-        return await axios.post(this.#removelikeUrl,{
+        return await axios.post(this.#removelikeUrl+idComment+"/",{
             idUser   
         },{
-            withCrediental:true
+            withCredentials:true
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -45,7 +46,7 @@ export default class CommentApi{
         return await axios.post(this.#addDislikeUrl+idComment+"/",{
             idUser   
         },{
-            withCrediental:true
+            withCredentials:true
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -59,7 +60,7 @@ export default class CommentApi{
         return await axios.post(this.#removeDislikeUrl+idComment+"/",{
             idUser   
         },{
-            withCrediental:true
+            withCredentials:true
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -68,5 +69,17 @@ export default class CommentApi{
         });
     }
 
+
+    async createComment(comment){
+        await axios.post(this.#createNewComment,{
+            comment
+        },{
+            withCredentials:true
+        }).then(function(response){
+
+        }).catch(function(error){
+            console.log(error)
+        })
+    }
 
 }

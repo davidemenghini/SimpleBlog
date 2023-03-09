@@ -66,16 +66,6 @@ public class PostApi{
         return "asddsa";
     }
 
-    @RequestMapping(value = "/api/private/post/add/{idPost}", method = POST)
-    @ResponseBody
-    public ResponseEntity<Post> AddComment(@CookieValue("session_id") String session_id,@CookieValue("csrf_cookie") String csrf_cookie, @RequestBody Post post){
-        if(!this.userSessionChecker.checkSession(session_id,csrf_cookie, p.getId_author())){
-            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
-        }
-        this.postService.createPost(post);
-        return new ResponseEntity<>(post,HttpStatus.OK);
-    }
-
 
     @PostMapping(value = "/api/public/post/random/")
     @ResponseBody
@@ -213,8 +203,22 @@ public class PostApi{
             }else{
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-
         }
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "api/private/post/add/")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    public ResponseEntity<Void> addPost(HttpServletRequest request, @RequestBody Post post){
+        Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), post.getId_author())){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }else{
+            this.postService.createPost(post);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
     }
 
 

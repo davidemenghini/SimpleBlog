@@ -15,7 +15,6 @@ public class LikeComment {
 
     @Column(name = "id")
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
 

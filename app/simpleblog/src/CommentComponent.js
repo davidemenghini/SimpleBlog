@@ -112,9 +112,24 @@ export default class CommentComponent extends Component{
     }
 
     async componentDidUpdate(prevProps, prevState,snapshot){
-        if(this.props.isUserLogged !== prevProps.isUserLogged){
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        if(this.props.isUserLogged !== prevProps.isUserLogged && this.props.isUserLogged===true){
+            await delay(2000)
+            var api = new PostApi();
+            let retIsLikedToUser = await api.fetchCommentIsLikedToUser(this.state.id,sessionStorage.getItem('idUser'));
+            if(retIsLikedToUser==='yes') {
+                this.setState({isLikedToUser: true})
+            } else{
+                this.setState({isLikedToUser: false})
+            }
+            var api = new PostApi();
+            let retIsDislikedToUser = await api.fetchCommentIsDislikedToUser(this.state.id,sessionStorage.getItem('idUser'));
+            if(retIsDislikedToUser==='yes'){
+                this.setState({isDislikedToUser: true}) 
+            }else{
+                this.setState({isDislikedToUser: false})
+            }
             
-            this.fetchIsLikedToUser();
             this.fetchIsDislikedToUser();
         }
     }

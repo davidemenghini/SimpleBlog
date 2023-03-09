@@ -16,7 +16,6 @@ public class DislikeComment {
 
     @Column(name = "id")
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
 

@@ -38,4 +38,16 @@ public interface CommentService {
     void removeDislikeToUser(int idUser,int idComment);
 
 
+    /**
+     * Questo metodo controlla se un id di un commento esiste.
+     * @param id id da controllare.
+     * @return true se l'id esiste gi&agrave;, false altrimenti.
+     */
+    boolean checkIfIdCommentExist(int id);
+
+    /**
+     * Questo metodo crea un nuovo commento nel modello di persistenza.
+     * @param c il nuovo commento da aggiungere.
+     */
+    void createNewComment(Comment c);
 }
