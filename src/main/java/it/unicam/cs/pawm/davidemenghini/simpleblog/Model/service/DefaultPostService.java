@@ -48,7 +48,18 @@ public class DefaultPostService implements PostService{
 
     @Override
     public void createPost(Post post) {
+        int id = this.createNewPostId();
+        post.setId(id);
         this.postRepo.save(post);
+    }
+
+    private int createNewPostId() {
+        Random random=new Random();
+        int id;
+        do{
+            id = random.nextInt(30000);
+        }while(this.postRepo.findById(id).isPresent());
+        return id;
     }
 
     @Override

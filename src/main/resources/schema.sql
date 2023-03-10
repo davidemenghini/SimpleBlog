@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Comment(
 CREATE TABLE IF NOT EXISTS Post(
                                    id int primary key ,
                                    data_text blob ,
-                                   data_img blob,
+                                   data_img longblob,
                                    id_author int,
                                    title_text blob,
                                    like_number int,

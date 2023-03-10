@@ -7,6 +7,7 @@ import Post from './ViewObjects/Post';
 import axios from "axios"
 import UserApi from './ViewObjects/UserApi';
 import AddPostComponent from './AddPostComponent';
+import {Button}  from "react-bootstrap";
 export default class App extends Component{
 
 
@@ -17,6 +18,7 @@ export default class App extends Component{
         this.isLogged = this.isLogged.bind(this);
         this.makeLogout = this.makeLogout.bind(this);
         this.loginClick = this.loginClick.bind(this);
+        this.handleAddPost = this.handleAddPost.bind(this);
         this.state = {
           showLogin: false,
           isUserLogged: false,
@@ -24,6 +26,11 @@ export default class App extends Component{
         }
       }
 
+      handleAddPost(evt){
+        this.setState({
+          showAddNewPost: !this.state.showAddNewPost
+        })
+      }
 
       render(){
         return(
@@ -36,10 +43,14 @@ export default class App extends Component{
             </div>
             <br></br>
             <div style={{backgroundColor: '#393B41'}}>
+              <div style={{textAlign:'center'}}>
+                {this.state.showAddNewPost===false ? <Button variant="secondary" onClick={(evt)=>this.handleAddPost(evt)}> <b>inserisci un nuovo post!</b></Button> 
+                          : <Button variant="dark" onClick={(evt)=>this.handleAddPost(evt)}> annulla il nuovo post</Button>}</div>
+              <br></br>
               {this.state.showLogin===true && this.state.isUserLogged===false ? <LoginForm isLogged = {this.isLogged} isUserLogged = {true} loginFunc = {this.loginClick}/> : undefined }
               {this.state.showAddNewPost=== true? <AddPostComponent isUserLogged={this.state.isUserLogged}/> : null}
-              {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[0].getLikeNumber()} dislikeNumber={this.state.posts[0].getDislikeNumber()} title={this.state.posts[0].getTitleText()} text ={this.state.posts[0].getDataText()} img = {this.state.posts[0].getBase64DataImg()} id_author = {this.state.posts[0].getIda()} id = {this.state.posts[0].getId()}/>: null}
-              {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[1].getLikeNumber()} dislikeNumber={this.state.posts[1].getDislikeNumber()} title={this.state.posts[1].getTitleText()} text ={this.state.posts[1].getDataText()} img = {this.state.posts[1].getBase64DataImg()} id_author = {this.state.posts[1].getIda()} id = {this.state.posts[1].getId()}/>: null}
+              {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[0].getLikeNumber()} dislikeNumber={this.state.posts[0].getDislikeNumber()} title={this.state.posts[0].getTitleText()} text ={this.state.posts[0].getDataText()} img = {this.state.posts[0].getDataImage()} id_author = {this.state.posts[0].getIda()} id = {this.state.posts[0].getId()}/>: null}
+              {this.state.posts!== undefined ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[1].getLikeNumber()} dislikeNumber={this.state.posts[1].getDislikeNumber()} title={this.state.posts[1].getTitleText()} text ={this.state.posts[1].getDataText()} img = {this.state.posts[1].getDataImage()} id_author = {this.state.posts[1].getIda()} id = {this.state.posts[1].getId()}/>: null}
             </div>
         </div>  
         );
@@ -78,9 +89,10 @@ export default class App extends Component{
           var p1 = new Post(p1Obj.id,p1Obj.id_author,p1Obj.data_text,p1Obj.title_text);
           p1.setLikeNumber(p1Obj.likeNumber);
           p1.setDislikeNumber(p1Obj.dislikeNumber);
-          p1.setRawDataImg(p1Obj.data_img)
+          p1.setDataImage(p1Obj.data_img)
+          console.log("p1 img:"+p1Obj.data_img)
           var p2 = new Post(p2Obj.id,p2Obj.id_author,p2Obj.data_text,p2Obj.title_text);
-          p2.setRawDataImg(p2Obj.data_img);
+          p2.setDataImage(p2Obj.data_img);
           p2.setLikeNumber(p2Obj.likeNumber);
           p2.setDislikeNumber(p2Obj.dislikeNumber);
           console.log([p1,p2])

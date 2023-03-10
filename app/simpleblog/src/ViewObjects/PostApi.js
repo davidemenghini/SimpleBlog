@@ -24,29 +24,36 @@ export default class PostApi{
 
     #postRemoveDislike = "http://localhost:8080/api/private/post/dislike/remove/"
 
+    #createPost = "http://localhost:8080/api/private/post/add/"
+
     /**
      * Questo metodo restituisce due post random. 
      */
     async fetchRandomPosts(){
-        console.log("facendo la richiesta...");
         return axios.post(this.randomPostUrl, {
 
         })
     }
 
 
-    async createPostFromJson(postJson){
-        console.log("postJson: "+postJson);
-        var p = new Post(postJson.id,postJson.id_author,postJson.data_text,postJson.title_text);
-        p.setRawDataImg(postJson.data_img)
-        console.log("creando l'oggetto "+p);
-        return p;
+    async createPostFromJson(post){
+        console.log("p: "+post)
+        await axios.post(this.#createPost,{
+            post
+        },{
+            withCredentials: true
+        }).then(function(response){
+
+        }).catch(function(error){
+            console.log(error);
+        })
     }
 
 
 
     async isLikedToUser(idUser,idPost){
         var url = this.#isLikedToUserUrl+idPost+"/"
+        console.log("p: "+idPost)
         var ret = await axios.post(url,{
             idUser
         },{
@@ -64,6 +71,7 @@ export default class PostApi{
 
     async isDislikedToUser(idUser,idPost){
         var url = this.#isDislikedToUserUrl+idPost+"/"
+        console.log("p: "+idPost)
        return await axios.post(url,{
             idUser
         },{
@@ -77,6 +85,7 @@ export default class PostApi{
     }
 
     async fetchCommentIsLikedToUser(idComment,idUser){
+        console.log("p: "+idComment)
         var url = this.#commentisLikedToUserUrl+idComment+"/"
         return await axios.post(url,{
             idUser

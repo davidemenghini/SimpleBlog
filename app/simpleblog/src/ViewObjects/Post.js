@@ -44,6 +44,12 @@ export default class Post{
         this.data_img = Buffer.from(img).toString('base64'); 
         this.isBase64 = true;
     }
+    getDataImage(){
+        return this.data_img;
+    }
+    setDataImage(img){
+        this.data_img = img;
+    }
     
     
     getRawDataImg(){

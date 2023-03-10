@@ -1,6 +1,7 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Comment;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.CookieCreator;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.PostService;
@@ -210,12 +211,14 @@ public class PostApi{
     @ResponseBody
     @PostMapping(value = "api/private/post/add/")
     @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
-    public ResponseEntity<Void> addPost(HttpServletRequest request, @RequestBody Post post){
+    public ResponseEntity<Void> addPost(HttpServletRequest request, @RequestBody Map<String, Post> body){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), post.getId_author())){
+        logger.info(cookie.toString());
+        logger.info("post: "+body.toString());
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), body.get("post").getId_author())){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }else{
-            this.postService.createPost(post);
+            this.postService.createPost(body.get("post"));
             return new ResponseEntity<>(HttpStatus.OK);
         }
 

@@ -21,11 +21,13 @@ export default class PostComponent extends Component{
         this.addNewDislike = this.addNewDislike.bind(this);
         this.addNewComment = this.addNewComment.bind(this);
         this.updateNewCommentText = this.updateNewCommentText.bind(this);
+        console.log(props.img!=="")
+        let img = new TextDecoder().decode(new Uint8Array(props.img));
         this.state = {
             id: props.id,
             ida: props.ida,
             title: Buffer.from(props.title, 'utf-8').toString(),
-            img: props.img,
+            img: img,
             text:  Buffer.from(props.text, 'utf-8').toString(),
             showComments: false,
             Comments: [],
@@ -39,7 +41,6 @@ export default class PostComponent extends Component{
             showDislikeAlert: false,
             newCommentText: ""
         };
-
     }
 
     async addNewComment(evt){
@@ -98,7 +99,10 @@ export default class PostComponent extends Component{
             <div style={{textAlign: 'center'}}>
                 <h3>{this.state.title}</h3>
                 <span>{this.state.text}</span>
-                {this.state.img!=='' ? <img src={'data:image/jpeg;base64,${'+this.state.img+'}'}></img>: null}
+                <br></br>
+                <div style={{}}>
+                    {this.state.img!=='' ? <img style={{maxHeight:'100%',maxWidth:'100%'}} src={this.state.img}></img>: null}
+                </div>
             </div>
             
             <br></br>
@@ -153,9 +157,9 @@ export default class PostComponent extends Component{
 
                 }
             }else{
-                var apiPost = new PostApi();
-                var ret = await apiPost.removeLikePost(this.state.id,idUser);
-                if(ret===true){
+                var api = new PostApi();
+                var retRemLike = await api.removeLikePost(this.state.id,idUser);
+                if(retRemLike===true){
                     this.setState({likeNumber: this.state.likeNumber-1,isLikedToUser: false}) 
                 }else{
                     
@@ -245,7 +249,6 @@ export default class PostComponent extends Component{
     updateNotEmptyComments(commentsJsonList){
         var c = new Comment();
         var arr = [];
-        console.log("size: "+commentsJsonList.length+"\n updateNotEmptyComm: "+commentsJsonList)
         for(var i=0; i<commentsJsonList.length;i++){
             const obj = JSON.parse(commentsJsonList[i])
             c.setId(obj.id);
