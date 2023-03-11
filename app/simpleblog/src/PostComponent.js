@@ -4,6 +4,7 @@ import axios from "axios";
 import Comment from "./ViewObjects/Comment";
 import PostApi from "./ViewObjects/PostApi";
 import CommentApi from "./ViewObjects/CommentApi";
+import UserApi from "./ViewObjects/UserApi";
 
 export default class PostComponent extends Component{
 
@@ -21,11 +22,10 @@ export default class PostComponent extends Component{
         this.addNewDislike = this.addNewDislike.bind(this);
         this.addNewComment = this.addNewComment.bind(this);
         this.updateNewCommentText = this.updateNewCommentText.bind(this);
-        console.log(props.img!=="")
         let img = new TextDecoder().decode(new Uint8Array(props.img));
         this.state = {
             id: props.id,
-            ida: props.ida,
+            ida: props.id_author,
             title: Buffer.from(props.title, 'utf-8').toString(),
             img: img,
             text:  Buffer.from(props.text, 'utf-8').toString(),
@@ -39,8 +39,19 @@ export default class PostComponent extends Component{
             isDislikedToUser: false,
             showLikeAlert: false,
             showDislikeAlert: false,
-            newCommentText: ""
+            newCommentText: "",
+            username: ""
         };
+    }
+
+
+    async componentDidMount(){
+        var api = new UserApi();
+        let username = await api.getPostUserFromId(this.props.id_author);
+        console.log(username)
+        if(username!==undefined){
+            this.setState({username: username});
+        }
     }
 
     async addNewComment(evt){
@@ -97,6 +108,7 @@ export default class PostComponent extends Component{
         return (
         <div className="rounded shadow p-3 mb-5" style={{backgroundColor: 'gray',float:'center' ,marginLeft: '25%', marginRight: '25%'}}>
             <div style={{textAlign: 'center'}}>
+                <h2 className="text-white bg-dark">{this.state.username}</h2>
                 <h3>{this.state.title}</h3>
                 <span>{this.state.text}</span>
                 <br></br>
@@ -128,7 +140,7 @@ export default class PostComponent extends Component{
                     <button type="button" className="btn btn-light btn-block" style={{width: '50%'}} onClick={(evt)=>this.showAddNewComment()}>aggiungi un commento...</button>
                 </span>
             </div>
-            <div>
+            <div style={{display: "inline-block",width:'100%'}}>
                 {this.state.showAddNewComment ? (this.renderAddNewComment()) :null}
                 {this.state.showComments===true ?
                         this.state.Comments.length !==0 ? 

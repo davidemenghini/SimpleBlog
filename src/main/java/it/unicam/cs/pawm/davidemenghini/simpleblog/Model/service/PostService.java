@@ -2,6 +2,7 @@ package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service;
 
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface PostService {
     void removeLikeToPost(int idu,int idPost);
 
     void removeDislikeToPost(int idu,int idPost);
+
+    List<Post> searchByTitleAndText(String value);
 }

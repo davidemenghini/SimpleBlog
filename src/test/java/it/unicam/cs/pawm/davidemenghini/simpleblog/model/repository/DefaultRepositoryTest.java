@@ -67,12 +67,12 @@ public class DefaultRepositoryTest {
     private Post defaultSetterPost(Post expectedPost) {
         expectedPost.setId(1);
         byte[] data_text = "Test".getBytes();
-        expectedPost.setData_text(data_text);
+        expectedPost.setDataText(data_text);
         byte[] data_img = new byte[0];
         expectedPost.setData_img(data_img);
         expectedPost.setId_author(1);
         byte[] title_text = "ciao questa è una prova.".getBytes(StandardCharsets.UTF_8);
-        expectedPost.setTitle_text(title_text);
+        expectedPost.setTitleText(title_text);
         expectedPost.setLikeNumber(1);
         expectedPost.setDislikeNumber(1);
         return expectedPost;

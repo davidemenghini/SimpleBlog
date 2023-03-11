@@ -21,7 +21,7 @@ public class Post {
     private int id;
 
     @Column(name="data_text")
-    private byte[] data_text;
+    private byte[] dataText;
 
     @Column(name="data_img")
     private byte[] data_img;
@@ -30,7 +30,7 @@ public class Post {
     private int id_author;
 
     @Column(name="title_text")
-    private byte[] title_text;
+    private byte[] titleText;
 
     @Column(name="like_number")
     private int likeNumber;

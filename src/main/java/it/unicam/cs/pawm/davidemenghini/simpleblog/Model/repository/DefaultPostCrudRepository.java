@@ -1,7 +1,6 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository;
 
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -18,6 +17,9 @@ public interface DefaultPostCrudRepository extends CrudRepository<Post,Integer>,
 
     @Query(value = "select * from simple_blog.post order by RAND() limit ?1",nativeQuery = true)
     List<Post> readRandomPost(int randomPost);
+
+    //List<Post> findByTitleTextAndDataText(byte[] Title_text, byte[] Data_text);
+
 
 
 

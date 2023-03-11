@@ -26,6 +26,9 @@ export default class PostApi{
 
     #createPost = "http://localhost:8080/api/private/post/add/"
 
+    #searchPostUrl = "http://localhost:8080/api/public/post/search/"
+    
+
     /**
      * Questo metodo restituisce due post random. 
      */
@@ -35,6 +38,18 @@ export default class PostApi{
         })
     }
 
+
+
+    async searchPost(value){
+        return await axios.post(this.#searchPostUrl,{
+            value
+        })
+        .then(function(response){
+            return response.data;
+        }).catch(function(error){
+            return undefined;
+        });
+    }
 
     async createPostFromJson(post){
         console.log("p: "+post)

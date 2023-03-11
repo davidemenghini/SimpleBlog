@@ -83,7 +83,7 @@ export default class CommentComponent extends Component{
             </div>)
         }else{
             return(
-            <div style={{borderStyle: 'solid', borderColor: '#000000', display: 'inline-block', width:'100%'}} className="rounded">
+            <div style={{borderStyle: 'solid', borderColor: '#000000', display:"inline-block", width:'100%'}} className="rounded">
                 <div style={{backgroundColor:'#918B8B'}}>
                     {this.renderUser()}
                     {this.renderTextComment()}
@@ -97,12 +97,10 @@ export default class CommentComponent extends Component{
         }
     }
 
-    async componentDidMount(){
+    async componentDidMount(props){
         if(this.state.isEmpty===false){
             var userApi = new UserApi();
-            const username = await userApi
-                                    .getUserFromId(this.state.idA)
-                                    .then((data)=> data.username);
+            const username = await userApi.getUsernameFromId(this.props.idA)
             this.setState({
                 username: username
             })
@@ -137,11 +135,9 @@ export default class CommentComponent extends Component{
     renderUser(){
         return (
         <div style={{color: '#652C2C'}}>
-            <p className="font-weight-bold h5">
                 <span style={{fontWeight: 'bold'}}>
-                {this.state.username}
+                    {this.state.username}
                 </span>
-            </p>
         </div>
         )
     }

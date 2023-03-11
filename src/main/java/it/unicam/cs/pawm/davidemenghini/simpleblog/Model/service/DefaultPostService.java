@@ -14,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @NoArgsConstructor
 public class DefaultPostService implements PostService{
@@ -157,6 +155,20 @@ public class DefaultPostService implements PostService{
                 this.postRepo.save(newPost);
             }
         }
+    }
+
+    @Override
+    public List<Post> searchByTitleAndText(String value) {
+        logger.info(value);
+        Iterable<Post> allPosts = this.postRepo.findAll();
+        List<Post> ret = new ArrayList<>();
+        for (Post p: allPosts){
+            String title = new String(p.getTitleText(),StandardCharsets.UTF_8);
+            String text = new String(p.getDataText(),StandardCharsets.UTF_8);
+            if(title.contains(value) || text.contains(value)) ret.add(p);
+
+        }
+        return ret;
     }
 
     private boolean checkIfIdLikeExists(int id,int idPost,int idUser) {

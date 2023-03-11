@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 @RestController
 @CrossOrigin(allowCredentials = "true",exposedHeaders = "Set-Cookie, csrf_token", origins = "http://localhost:3000")
 public class UserSessionHandlerApi {
@@ -141,8 +144,18 @@ public class UserSessionHandlerApi {
         return ret;
     }
 
-    @RequestMapping(value="/api/public/user/{idUser}/")
+    @GetMapping(value="/api/public/user/post/{idUser}/")
+    @CrossOrigin(origins = "http://localhost:3000", methods = GET)
+    @ResponseBody
     public ResponseEntity<String> getUserFromId(@PathVariable int idUser){
+        DefaultUser user = this.userService.getUserFromId(idUser);
+        return new ResponseEntity<>(this.userService.transformUserToJson(user),HttpStatus.OK);
+    }
+
+    @GetMapping(value="/api/public/user/comment/{idUser}/")
+    @ResponseBody
+    @CrossOrigin(origins = "http://localhost:3000", methods = GET)
+    public ResponseEntity<String> getUsernameFromId(@PathVariable int idUser){
         DefaultUser user = this.userService.getUserFromId(idUser);
         return new ResponseEntity<>(this.userService.transformUserToJson(user),HttpStatus.OK);
     }

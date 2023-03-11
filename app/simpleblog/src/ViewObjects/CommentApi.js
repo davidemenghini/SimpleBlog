@@ -11,8 +11,9 @@ export default class CommentApi{
 
     #removelikeUrl = "http://localhost:8080/api/private/comment/like/remove/";
 
-    #createNewComment = "http://localhost:8080/api/private/comment/add/"
+    #createNewComment = "http://localhost:8080/api/private/comment/add/";
 
+    
 
     async addLike(idUser,idComment){
         return await axios.post(this.#addLikeUrl+idComment+"/",{

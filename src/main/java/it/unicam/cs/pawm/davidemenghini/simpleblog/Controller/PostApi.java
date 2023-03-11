@@ -1,20 +1,17 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Comment;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.Post;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.CookieCreator;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.PostService;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service.UserSessionChecker;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -225,7 +222,18 @@ public class PostApi{
     }
 
 
+    @PostMapping(value = "api/public/post/search/")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST)
+    @ResponseBody
+    public ResponseEntity<List<String>> searchPostByTitleAndText(@RequestBody String value){
+        return new ResponseEntity<>(this.fromObjectsToStringList(this.postService.searchByTitleAndText(this.extractValueFromStringvalue(value))),HttpStatus.OK);
+    }
 
+    private String extractValueFromStringvalue(String value) {
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String,String> m = new Gson().fromJson(value, type);
+        return m.get("value");
+    }
 
 
 }
