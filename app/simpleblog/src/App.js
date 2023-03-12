@@ -58,11 +58,11 @@ export default class App extends Component{
             <br></br>
             <div style={{backgroundColor: '#393B41'}}>
               <div style={{textAlign:'center'}}>
-                {this.state.showAddNewPost===false ? <Button variant="secondary" onClick={(evt)=>this.handleAddPost(evt)}> <b>inserisci un nuovo post!</b></Button> 
-                          : <Button variant="dark" onClick={(evt)=>this.handleAddPost(evt)}> annulla il nuovo post</Button>}</div>
               <br></br>
               {this.state.showLogin===true && this.state.isUserLogged===false ? <LoginForm isLogged = {this.isLogged} isUserLogged = {true} loginFunc = {this.loginClick}/> : undefined }
-              {this.state.showAddNewPost=== true? <AddPostComponent isUserLogged={this.state.isUserLogged}/> : null}
+              {this.state.showAddNewPost===false ? <Button variant="secondary" onClick={(evt)=>this.handleAddPost(evt)}> <b>inserisci un nuovo post!</b></Button> 
+                          : <Button variant="dark" onClick={(evt)=>this.handleAddPost(evt)}> annulla il nuovo post</Button>}</div>
+              {this.state.showAddNewPost=== true? <AddPostComponent isUserLogged={this.state.isUserLogged} showAddNewPost={this.handleAddPost()}/> : null}
               
               {this.state.posts!== undefined && this.state.hasBeenSearched===false ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[0].getLikeNumber()} dislikeNumber={this.state.posts[0].getDislikeNumber()} title={this.state.posts[0].getTitleText()} text ={this.state.posts[0].getDataText()} img = {this.state.posts[0].getDataImage()} id_author = {this.state.posts[0].getIda()} id = {this.state.posts[0].getId()}/>: null}
               {this.state.posts!== undefined && this.state.hasBeenSearched===false ? <PostComponent isUserLogged={this.state.isUserLogged} likeNumber={this.state.posts[1].getLikeNumber()} dislikeNumber={this.state.posts[1].getDislikeNumber()} title={this.state.posts[1].getTitleText()} text ={this.state.posts[1].getDataText()} img = {this.state.posts[1].getDataImage()} id_author = {this.state.posts[1].getIda()} id = {this.state.posts[1].getId()}/>: null}
@@ -91,7 +91,6 @@ export default class App extends Component{
         this.setState({
           isUserLogged: !this.state.isUserLogged
         });
-        console.log("user loggato...");
       }
       
 
@@ -130,7 +129,6 @@ export default class App extends Component{
           let ret = await api.searchPost(value);
           let arrPosts = []
           if(ret!==undefined){
-            console.log("size: "+ret.length)
               for(let i=0;i<ret.length;i++){
                 let json = JSON.parse(ret[i]);
                 var p = new Post(json.id,json.id_author,json.dataText,json.titleText);
@@ -140,47 +138,35 @@ export default class App extends Component{
                 arrPosts[i] = p
               }
               this.setState({hasBeenSearched:true, searchedPosts: arrPosts})
-            console.log("arr"+JSON.stringify(arrPosts))
           }
-          //this.setState({hasBeenSearched:true, posts: []})
         }
       }
 
 
       async makeLogout(){
         var userApi = new UserApi();
-        console.log({user:sessionStorage.getItem("username"), id:sessionStorage.getItem("idUser")})
         var ret = await userApi.makeLogout({user:sessionStorage.getItem("username"), id:sessionStorage.getItem("idUser")})
         if(ret !== null || ret!==undefined){
           this.setState({
             isUserLogged: false,
             showLogin: false
           });
-          console.log("ok");
         }else{
-          console.log("error");
         }
       }
 
       async loginClick(u,p){
-        console.log("parent: "+u+" "+p)
         var userApi = new UserApi();
         if(u!== "" && p !== ""){
             let ret = await userApi.makeLogin({user:u,psw:p});
-            console.log(ret)
-            if(ret===null || ret===undefined){
-              console.log("errore nel login");
-              }else{
-                var csrf_token = await userApi.getCsrfToken({user:u,psw:p});
-                console.log(ret)
-                sessionStorage.setItem("idUser",ret.id);
-                sessionStorage.setItem("username",u);
-                this.setState({
-                    isUserLogged: true
-                })
+            if(ret!==null || ret!==undefined){
+              var csrf_token = await userApi.getCsrfToken({user:u,psw:p});
+              sessionStorage.setItem("idUser",ret.id);
+              sessionStorage.setItem("username",u);
+              this.setState({
+                  isUserLogged: true
+              })
               }
-        }else{
-                
         }    
     }
 

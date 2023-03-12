@@ -44,25 +44,18 @@ export default class LoginForm extends React.Component{
             isLoading: true
         })
         if(user!== "" && pass !== ""){
-            var jsonLogin = JSON.stringify({user:this.state.user,psw:this.state.pass});
-            console.log(jsonLogin)
             var ret = await this.state.api.makeLogin({user:this.state.user,psw:this.state.pass});
-            console.log(ret)
             if(ret===null){
                 this.setState({
                     isLoading: false
                 })
-                console.log(this.state.isLoading);
                 return;
             }else{
                 this.setState({
                     isLoading: false
                 })
-                
             }
-        }else{
-                
-        }    
+        }   
     }
 
 

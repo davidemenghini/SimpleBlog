@@ -48,6 +48,7 @@ public class DefaultPostService implements PostService{
     public void createPost(Post post) {
         int id = this.createNewPostId();
         post.setId(id);
+        //logger.info(post.toString());
         this.postRepo.save(post);
     }
 

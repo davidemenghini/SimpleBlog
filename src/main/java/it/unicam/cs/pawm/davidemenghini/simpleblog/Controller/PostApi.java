@@ -47,7 +47,7 @@ public class PostApi{
 
 
     private final Function<Cookie[], Map<String,String>> extractCookies = (cookies) -> Arrays.stream(cookies)
-                .filter(x->x.getName().equals("session_id")|| x.getName().equals("csrf_token"))
+                .filter(x->x.getName().equals("session_id"))
                 .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
 
 
@@ -70,22 +70,20 @@ public class PostApi{
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<String>> getRandomPosts(){
         List<Post> rp = this.postService.getRandomPosts(this.RANDOM_POST);
-        //logger.info(rp.toString());
         return new ResponseEntity<>(this.fromObjectsToStringList(rp),HttpStatus.OK);
     }
 
 
     @PostMapping(value = "/api/private/post/like/{idPost}/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<String> isPostLikedToUser(HttpServletRequest request, @PathVariable int idPost,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         logger.info("cookie info: "+cookie.toString());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else{
-            //response.setHeader(HttpHeaders.SET_COOKIE,this.cookieCreator.createCookie(new String[]{"csrf_token",this.userSessionChecker.generateNewToken(idu)},true).toString());
             return this.postService.isLikedToUser(idu,idPost) ? new ResponseEntity<>("yes",HttpStatus.OK) : new ResponseEntity<>("no",HttpStatus.OK);
         }
     }
@@ -98,12 +96,12 @@ public class PostApi{
 
     @PostMapping(value = "/api/private/post/dislike/{idPost}/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<String> isPostDislikedToUser(@PathVariable int idPost,HttpServletRequest request,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         logger.info("cookie info: "+cookie.toString());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else{
             //response.setHeader(HttpHeaders.SET_COOKIE,this.cookieCreator.createCookie(new String[]{"csrf_token",this.userSessionChecker.generateNewToken(idu)},true).toString());
@@ -127,12 +125,12 @@ public class PostApi{
 
 
     @PostMapping(value = "api/private/post/like/add/{idPost}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Void> addLikeToPost(HttpServletRequest request, @PathVariable int idPost,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else {
             if (!this.postService.isLikedToUser(idu, idPost) && !this.postService.isDislikedToUser(idu, idPost)){
@@ -148,12 +146,12 @@ public class PostApi{
 
 
     @PostMapping(value = "api/private/post/dislike/add/{idPost}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000",methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Void> addDislikeToPost(HttpServletRequest request, @PathVariable int idPost,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else {
             if (!this.postService.isLikedToUser(idu, idPost) && !this.postService.isDislikedToUser(idu, idPost)){
@@ -167,12 +165,12 @@ public class PostApi{
     }
 
     @PostMapping(value = "api/private/post/like/remove/{idPost}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000",methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Void> removeLikeFromPost(HttpServletRequest request, @PathVariable int idPost,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else {
             if(this.postService.isLikedToUser(idu, idPost)){
@@ -187,12 +185,12 @@ public class PostApi{
 
 
     @PostMapping(value = "api/private/post/dislike/remove/{idPost}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Void> removeDislikeFromPost(HttpServletRequest request, @PathVariable int idPost,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else {
             if(this.postService.isDislikedToUser(idu, idPost)){
@@ -207,12 +205,12 @@ public class PostApi{
 
     @ResponseBody
     @PostMapping(value = "api/private/post/add/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<Void> addPost(HttpServletRequest request, @RequestBody Map<String, Post> body){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
-        logger.info(cookie.toString());
-        logger.info("post: "+body.toString());
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), body.get("post").getId_author())){
+        //logger.info(cookie.toString());
+        //logger.info("post: "+body.toString());
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), body.get("post").getId_author())){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }else{
             this.postService.createPost(body.get("post"));
@@ -223,7 +221,7 @@ public class PostApi{
 
 
     @PostMapping(value = "api/public/post/search/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST)
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST,allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<List<String>> searchPostByTitleAndText(@RequestBody String value){
         return new ResponseEntity<>(this.fromObjectsToStringList(this.postService.searchByTitleAndText(this.extractValueFromStringvalue(value))),HttpStatus.OK);

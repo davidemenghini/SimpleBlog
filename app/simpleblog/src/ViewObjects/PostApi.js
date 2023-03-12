@@ -6,28 +6,33 @@ import Post from "./Post";
  */
 export default class PostApi{
 
-    randomPostUrl = "http://localhost:8080/api/public/post/random/"
+    randomPostUrl = "http://localhost:8080/api/public/post/random/";
 
-    #isLikedToUserUrl = "http://localhost:8080/api/private/post/like/"
+    #isLikedToUserUrl = "http://localhost:8080/api/private/post/like/";
     
-    #isDislikedToUserUrl = "http://localhost:8080/api/private/post/dislike/"
+    #isDislikedToUserUrl = "http://localhost:8080/api/private/post/dislike/";
     
-    #commentisLikedToUserUrl = "http://localhost:8080/api/private/comment/like/"
+    #commentisLikedToUserUrl = "http://localhost:8080/api/private/comment/like/";
 
-    #commentisDislikedToUserUrl = "http://localhost:8080/api/private/comment/dislike/"
+    #commentisDislikedToUserUrl = "http://localhost:8080/api/private/comment/dislike/";
 
-    #postAddLike = "http://localhost:8080/api/private/post/like/add/"
+    #postAddLike = "http://localhost:8080/api/private/post/like/add/";
 
-    #postAddDislike = "http://localhost:8080/api/private/post/dislike/add/"
+    #postAddDislike = "http://localhost:8080/api/private/post/dislike/add/";
 
-    #postRemoveLike = "http://localhost:8080/api/private/post/like/remove/"
+    #postRemoveLike = "http://localhost:8080/api/private/post/like/remove/";
 
-    #postRemoveDislike = "http://localhost:8080/api/private/post/dislike/remove/"
+    #postRemoveDislike = "http://localhost:8080/api/private/post/dislike/remove/";
 
-    #createPost = "http://localhost:8080/api/private/post/add/"
+    #createPost = "http://localhost:8080/api/private/post/add/";
 
-    #searchPostUrl = "http://localhost:8080/api/public/post/search/"
+    #searchPostUrl = "http://localhost:8080/api/public/post/search/";
+
+    #token = "";
     
+    constructor(){
+        this.#token = sessionStorage.getItem("csrf_token");
+    }
 
     /**
      * Questo metodo restituisce due post random. 
@@ -52,11 +57,13 @@ export default class PostApi{
     }
 
     async createPostFromJson(post){
-        console.log("p: "+post)
         await axios.post(this.#createPost,{
             post
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
 
         }).catch(function(error){
@@ -67,14 +74,15 @@ export default class PostApi{
 
 
     async isLikedToUser(idUser,idPost){
-        var url = this.#isLikedToUserUrl+idPost+"/"
-        console.log("p: "+idPost)
+        var url = this.#isLikedToUserUrl+idPost+"/";
         var ret = await axios.post(url,{
             idUser
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
-            //console.log(response)
             return response.data;
         }).catch(function(error){
             console.log(error);
@@ -86,13 +94,14 @@ export default class PostApi{
 
     async isDislikedToUser(idUser,idPost){
         var url = this.#isDislikedToUserUrl+idPost+"/"
-        console.log("p: "+idPost)
        return await axios.post(url,{
             idUser
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
-            console.log(response.data)
             return response.data;
         }).catch(function(error){
             console.log(error);  
@@ -100,12 +109,14 @@ export default class PostApi{
     }
 
     async fetchCommentIsLikedToUser(idComment,idUser){
-        console.log("p: "+idComment)
         var url = this.#commentisLikedToUserUrl+idComment+"/"
         return await axios.post(url,{
             idUser
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
             return response.data;
         }).catch(function(error){
@@ -121,7 +132,10 @@ export default class PostApi{
         return await axios.post(url,{
             idUser
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         })
         .then(function(response){
             return response.data;
@@ -139,7 +153,10 @@ export default class PostApi{
         return await axios.post(url,{
             idUser
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
             return true;
         }).catch(function(error){
@@ -153,7 +170,10 @@ export default class PostApi{
         return await axios.post(url,{
             idUser
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
             return true;
         }).catch(function(error){
@@ -168,7 +188,10 @@ export default class PostApi{
         return await axios.post(url,{
             idUser
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
             return true;
         }).catch(function(error){
@@ -183,7 +206,10 @@ export default class PostApi{
         return await axios.post(url,{
             idUser
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
             return true;
         }).catch(function(error){

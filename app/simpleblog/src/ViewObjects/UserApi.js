@@ -13,6 +13,9 @@ export default class UserApi{
     
     #commentUserFromId = "http://localhost:8080/api/public/user/comment/";
 
+    #token = "";
+    
+
     async getUsernameFromId(idUser){
         return await axios.get(this.#commentUserFromId+idUser+"/")
         .then(function(response){
@@ -32,7 +35,6 @@ export default class UserApi{
         },{
             withCredentials: true
         }).then(function (response){
-            console.log(response)
             returningValue = response.data;
         }).catch(function (error){
             console.log(error);
@@ -49,7 +51,7 @@ export default class UserApi{
         },{
             withCredentials: true
         }).then(function (response){
-            console.log(response.headers);
+            sessionStorage.setItem("csrf_token",response.headers['csrf_token']);
             return response.data;
         }).catch(function (error){
             console.log(error);
@@ -80,7 +82,10 @@ export default class UserApi{
         await axios.post(url,{
             user:user,id:id
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers:{
+                csrf_token: sessionStorage.getItem('csrf_token')
+            }
         }).then(function(response){
             return response.data;
         }).catch(function (error){

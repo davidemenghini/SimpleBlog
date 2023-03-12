@@ -55,8 +55,8 @@ export default class AddPostComponent extends Component{
                     tt[i] = title_text[i]
                 }
                 const post = {
-                    data_text: dt,
-                    title_text: tt,
+                    dataText: dt,
+                    titleText: tt,
                     id_author: idUser,
                     likeNumber: 0,
                     dislikeNumber: 0,
@@ -70,18 +70,15 @@ export default class AddPostComponent extends Component{
     }
 
     async handleChangeImg(evt){
-        console.log(evt.target.files[0])
         let f = evt.target.files[0];
         var reader = new FileReader();
         reader.onloadend= ()=>{
             let utf8Encode = new TextEncoder();
             let utf8Byte = utf8Encode.encode(reader.result)
-            console.log(utf8Byte)
             let j= []
             for(let i=0;i<utf8Byte.length;i++){
                 j[i] = utf8Byte[i]
             }
-            console.log("j:"+j)
             this.setState({image: j});
         };
        reader.readAsDataURL(f)
@@ -109,7 +106,9 @@ export default class AddPostComponent extends Component{
                 <br></br>
                 <input className="form-control" accept=".jpg, .jpeg, .png" type="file" name="img" onChange={(evt)=>this.handleChangeImg(evt)}></input>
                 <br></br>
-                <Button variant="secondary" onClick={()=>this.addNewPost()}>CREA IL POST!</Button>
+                <Button variant="secondary" onClick={()=>{this.addNewPost();
+                                                        setTimeout(5000);
+                                                        this.props.showAddNewPost()}}>CREA IL POST!</Button>
                 
 
         </div>)

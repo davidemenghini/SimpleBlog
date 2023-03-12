@@ -172,7 +172,7 @@ export default class CommentComponent extends Component{
 
 
     async fetchIsLikedToUser(){
-        if(this.state.isUserLogged===true){
+        if(this.state.isUserLogged===true && this.state.isEmpty===false){
             var api = new PostApi();
             var retIsLikedToUser = await api.fetchCommentIsLikedToUser(this.state.id,sessionStorage.getItem('idUser'));
             if(retIsLikedToUser==='yes') {
@@ -185,7 +185,7 @@ export default class CommentComponent extends Component{
     }
 
     async fetchIsDislikedToUser(){
-        if(this.state.isUserLogged===true){
+        if(this.state.isUserLogged===true && this.state.isEmpty===false){
             var api = new PostApi();
             var retIsDislikedToUser = await api.fetchCommentIsDislikedToUser(this.state.id,sessionStorage.getItem('idUser'));
             if(retIsDislikedToUser==='yes'){

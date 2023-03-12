@@ -83,14 +83,14 @@ public class DefaultRepositoryTest {
         c1.setId(1);
         c1.setTextComment("commento1".getBytes());
         c1.setLike_number(1);
-        c1.setDislike_number(1);
+        c1.setDislike_number(0);
         c1.setIdAuthor(1);
         c1.setIdPost(1);
         Comment c2 = new Comment();
         c2.setId(2);
         c2.setTextComment("commento2".getBytes());
         c2.setLike_number(0);
-        c2.setDislike_number(0);
+        c2.setDislike_number(1);
         c2.setIdAuthor(1);
         c2.setIdPost(1);
         return List.of(c1,c2);

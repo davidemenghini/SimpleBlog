@@ -25,7 +25,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@CrossOrigin(allowCredentials = "true",exposedHeaders = "Set-Cookie, csrf_token", origins = "http://localhost:3000")
 public class UserSessionHandlerApi {
 
 
@@ -56,6 +55,7 @@ public class UserSessionHandlerApi {
 
     @RequestMapping(value = "/api/public/login/", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",exposedHeaders = "Set-Cookie")
     public ResponseEntity<String> handleLogin(@RequestBody String userAndPass, HttpServletResponse httpServletResponse){
         Map<String,String> jsonValues = this.getJsonValuesFromString(userAndPass);
         DefaultUser u = this.loginFunction.apply(jsonValues.get("username"), jsonValues.get("psw"));
@@ -78,6 +78,7 @@ public class UserSessionHandlerApi {
 
     @RequestMapping(value = "/api/public/csrf/", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin(allowCredentials = "true",exposedHeaders = "Set-Cookie, csrf_token", origins = "http://localhost:3000")
     public ResponseEntity<String> getCsrfToken(HttpServletRequest request, @RequestBody String userAndPass, HttpServletResponse httpServletResponse){
         logger.info("retrieving csrf token");
         Cookie session_id = Arrays.stream(request.getCookies())
@@ -90,7 +91,7 @@ public class UserSessionHandlerApi {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (u.getSession_id().equals(session_id.getValue())) {
             logger.info("getCsrf: "+this.sessionHandlerUtil.getCsrfToken(u.getId()));
-            httpServletResponse.setHeader(HttpHeaders.SET_COOKIE,this.cookieCreator.createCookie(new String[] {"csrf_token",this.sessionHandlerUtil.getCsrfToken(u.getId())},true).toString());
+            httpServletResponse.setHeader("csrf_token",this.sessionHandlerUtil.getCsrfToken(u.getId()));
             return new ResponseEntity<>("ok",HttpStatus.OK);
         }
         return null;
@@ -98,13 +99,14 @@ public class UserSessionHandlerApi {
 
     @RequestMapping(value="/api/private/logout/", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin(allowCredentials = "true",exposedHeaders = "*", origins = "http://localhost:3000")
     public ResponseEntity<String> handleLogout(HttpServletRequest request, @RequestBody String idAndUser){
         logger.info("handling logout...");
         Map<String,String> jsonValues = this.getJsonValuesFromIdAndUser(idAndUser);
         Map<String,String> cookies = Arrays.stream(request.getCookies())
-                .filter(x->x.getName().equals("session_id") || x.getName().equals("csrf_token"))
+                .filter(x->x.getName().equals("session_id"))
                 .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-        if(this.userSessionChecker.checkSession(cookies.get("session_id"),cookies.get("csrf_token"), Integer.parseInt(jsonValues.get("id")))){
+        if(this.userSessionChecker.checkSession(cookies.get("session_id"),request.getHeader("csrf_token"), Integer.parseInt(jsonValues.get("id")))){
             this.sessionHandlerUtil.logout(jsonValues.get("username"),cookies.get("session_id"));
             return new ResponseEntity<>("ok",HttpStatus.OK);
         }else{
@@ -145,7 +147,7 @@ public class UserSessionHandlerApi {
     }
 
     @GetMapping(value="/api/public/user/post/{idUser}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = GET)
+    @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "csrf_token, content-type",methods = GET)
     @ResponseBody
     public ResponseEntity<String> getUserFromId(@PathVariable int idUser){
         DefaultUser user = this.userService.getUserFromId(idUser);
@@ -154,7 +156,7 @@ public class UserSessionHandlerApi {
 
     @GetMapping(value="/api/public/user/comment/{idUser}/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = GET)
+    @CrossOrigin(origins = "http://localhost:3000",allowedHeaders = "*", methods = GET)
     public ResponseEntity<String> getUsernameFromId(@PathVariable int idUser){
         DefaultUser user = this.userService.getUserFromId(idUser);
         return new ResponseEntity<>(this.userService.transformUserToJson(user),HttpStatus.OK);

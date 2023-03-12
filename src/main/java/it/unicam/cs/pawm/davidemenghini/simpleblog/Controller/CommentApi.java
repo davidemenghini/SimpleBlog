@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000/")
+@CrossOrigin(origins = "http://localhost:3000/",allowedHeaders = "*")
 public class CommentApi {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentApi.class);
@@ -40,7 +40,7 @@ public class CommentApi {
 
 
     private final Function<Cookie[], Map<String,String>> extractCookies = (cookies) -> Arrays.stream(cookies)
-            .filter(x->x.getName().equals("session_id")|| x.getName().equals("csrf_token"))
+            .filter(x->x.getName().equals("session_id"))
             .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
 
     @RequestMapping(value = "/api/public/comment/{id}/")
@@ -52,11 +52,11 @@ public class CommentApi {
 
     @PostMapping(value = "/api/private/comment/add/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<Void> createComment(HttpServletRequest request, @RequestBody Map<String,Comment> body){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         logger.info("body: "+body.get("comment"));
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), body.get("comment").getIdAuthor())){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), body.get("comment").getIdAuthor())){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else{
             this.commentService.createNewComment(body.get("comment"));
@@ -104,11 +104,11 @@ public class CommentApi {
 
     @PostMapping(value = "/api/private/comment/like/{idComment}/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<String> isCommentLikedToUser(HttpServletRequest request,@PathVariable int idComment,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else{
             return this.commentService.isLikedToUser(idu,idComment) ?
@@ -120,11 +120,11 @@ public class CommentApi {
 
     @PostMapping(value = "/api/private/comment/dislike/{idComment}/")
     @ResponseBody
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     public ResponseEntity<String> isCommentDislikedToUser(HttpServletRequest request, @PathVariable int idComment,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }else {
             return this.commentService.isDislikedToUser(idu,idComment) ?
@@ -143,12 +143,12 @@ public class CommentApi {
     }
 
     @PostMapping(value = "api/private/comment/like/add/{idComment}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Boolean> addLikeComment(HttpServletRequest request, @PathVariable int idComment,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
         }else {
             if(!this.commentService.isLikedToUser(idu,idComment) && !this.commentService.isDislikedToUser(idu,idComment)){
@@ -162,12 +162,12 @@ public class CommentApi {
 
 
     @PostMapping(value = "api/private/comment/dislike/add/{idComment}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Boolean> addDislikeComment(HttpServletRequest request, @PathVariable int idComment, @RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
         }else {
             if(!this.commentService.isLikedToUser(idu,idComment) && !this.commentService.isDislikedToUser(idu,idComment)){
@@ -181,12 +181,12 @@ public class CommentApi {
 
 
     @PostMapping(value = "api/private/comment/dislike/remove/{idComment}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Boolean> removeDislikeComment(HttpServletRequest request, @PathVariable int idComment, @RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
         }else {
             if(!this.commentService.isLikedToUser(idu,idComment) && this.commentService.isDislikedToUser(idu,idComment)){
@@ -199,12 +199,12 @@ public class CommentApi {
     }
 
     @PostMapping(value = "api/private/comment/like/remove/{idComment}/")
-    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", methods = POST, allowCredentials = "true",allowedHeaders = "*")
     @ResponseBody
     public ResponseEntity<Boolean> removeLikeComment(HttpServletRequest request, @PathVariable int idComment,@RequestBody String idUser){
         Map<String,String> cookie = this.extractCookies.apply(request.getCookies());
         int idu = this.extractIdUserFromString(idUser);
-        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),cookie.get("csrf_token"), idu)){
+        if(!this.userSessionChecker.checkSession(cookie.get("session_id"),request.getHeader("csrf_token"), idu)){
             return new ResponseEntity<>(null,HttpStatus.FORBIDDEN);
         }else {
             if(this.commentService.isLikedToUser(idu,idComment) && !this.commentService.isDislikedToUser(idu,idComment)){

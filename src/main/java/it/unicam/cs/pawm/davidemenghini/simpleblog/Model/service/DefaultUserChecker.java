@@ -1,17 +1,15 @@
 package it.unicam.cs.pawm.davidemenghini.simpleblog.Model.service;
-
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.DefaultUser;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.Persistence.UserCsrfToken;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultTokenRepository;
 import it.unicam.cs.pawm.davidemenghini.simpleblog.Model.repository.DefaultUserCrudRepository;
-import jakarta.servlet.http.Cookie;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
-import java.util.UUID;
+
 
 
 @NoArgsConstructor
@@ -39,23 +37,4 @@ public class DefaultUserChecker implements UserSessionChecker {
         else return false;
     }
 
-    @Override
-    public String generateNewToken(int idUser) {
-        String csrfToken = this.generateToken();
-        this.saveCsrfToken(csrfToken,idUser);
-        return csrfToken;
-    }
-
-    private void saveCsrfToken(String csrfToken, int idUser) {
-        UserCsrfToken token = new UserCsrfToken();
-        token.setId(idUser);
-        token.setToken(csrfToken);
-        logger.info("L'utente "+token.getId()+" ha il token "+ token.getToken());
-        this.tokenRepo.save(token);
-    }
-
-    private String generateToken() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-    }
 }

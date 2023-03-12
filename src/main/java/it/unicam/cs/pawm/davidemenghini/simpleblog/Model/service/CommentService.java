@@ -9,7 +9,6 @@ import java.util.List;
 
 /**
  * Questa interfaccia definisce il comportamento del servizio che si occupa del repository {@link DefaultCommentCrudRepository}.
- *
  */
 @Service
 public interface CommentService {
@@ -23,18 +22,50 @@ public interface CommentService {
     List<Comment> getCommentFromIdPost(int id);
 
 
+    /**
+     * Questo metodo controlla se un utente ha aggiunto un "mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento da controllare.
+     * @return True se il commento è piaciuto all'utente, false altrimenti.
+     */
     boolean isLikedToUser(int idUser,int idComment);
 
+    /**
+     * Questo metodo controlla se un utente ha aggiunto un "non mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento da controllare.
+     * @return True se il commento non è piaciuto all'utente, false altrimenti.
+     */
     boolean isDislikedToUser(int idUser,int idComment);
 
 
+    /**
+     * Questo metodo aggiunge un "mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento.
+     */
     void addLikeToUser(int idUser,int idComment);
 
 
+    /**
+     * Questo metodo aggiunge un "non mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento.
+     */
     void addDislikeToUser(int idUser,int idComment);
 
+    /**
+     * Questo metodo rimuove un "mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento.
+     */
     void removeLikeToUser(int idUser,int idComment);
 
+    /**
+     * Questo metodo rimuove un "non mi piace" a un commento.
+     * @param idUser id dell'utente.
+     * @param idComment id del commento.
+     */
     void removeDislikeToUser(int idUser,int idComment);
 
 

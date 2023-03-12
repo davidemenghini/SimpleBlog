@@ -26,9 +26,9 @@ export default class PostComponent extends Component{
         this.state = {
             id: props.id,
             ida: props.id_author,
-            title: Buffer.from(props.title, 'utf-8').toString(),
+            title: Buffer.from(new Uint8Array(props.title), 'utf-8').toString(),
             img: img,
-            text:  Buffer.from(props.text, 'utf-8').toString(),
+            text:  Buffer.from(new Uint8Array(props.text), 'utf-8').toString(),
             showComments: false,
             Comments: [],
             likeNumber: props.likeNumber,
@@ -48,7 +48,6 @@ export default class PostComponent extends Component{
     async componentDidMount(){
         var api = new UserApi();
         let username = await api.getPostUserFromId(this.props.id_author);
-        console.log(username)
         if(username!==undefined){
             this.setState({username: username});
         }
@@ -157,9 +156,7 @@ export default class PostComponent extends Component{
     async addNewLike(evt){
         var idUser = sessionStorage.getItem("idUser");
         var username = sessionStorage.getItem("username");
-        console.log('controllando id e username...'+ evt.target.value)
         if(username!== undefined && idUser!==undefined){
-            console.log("value: "+evt.target.value)
             if(evt.target.value==='mi piace!'){
                 var apiPost = new PostApi();
                 var ret = await apiPost.addLikePost(this.state.id,idUser);
@@ -185,7 +182,6 @@ export default class PostComponent extends Component{
     async addNewDislike(evt){
         var idUser = sessionStorage.getItem("idUser");
         var username = sessionStorage.getItem("username");
-        console.log('controllando id e username...')
         if(username!== undefined && idUser!==undefined){
             if(evt.target.value==='non mi piace!'){
                 var apiPost = new PostApi();
@@ -272,7 +268,6 @@ export default class PostComponent extends Component{
             arr[i] = c
             c = new Comment();
         }
-        console.log("arr: "+arr)
         this.setState({
             Comments: arr,
             showComments: true

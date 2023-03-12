@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
  */
 @Transactional
 @Service
+@FunctionalInterface
 public interface UserSessionChecker {
 
 
@@ -21,12 +22,5 @@ public interface UserSessionChecker {
      */
     boolean checkSession(String sessionId, String csrf, int idUser);
 
-
-    /**
-     *
-     * @param idUser
-     * @return
-     */
-    String generateNewToken(int idUser);
 
 }

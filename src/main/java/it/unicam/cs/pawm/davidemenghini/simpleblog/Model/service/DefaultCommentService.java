@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * Implementazione di default del servizio che si occupa dei commenti.
+ */
 @Transactional
 public class DefaultCommentService implements CommentService{
 

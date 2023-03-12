@@ -13,13 +13,21 @@ export default class CommentApi{
 
     #createNewComment = "http://localhost:8080/api/private/comment/add/";
 
+    #token = "";
+    
+    constructor(){
+        this.#token = sessionStorage.getItem("csrf_token");
+    }
     
 
     async addLike(idUser,idComment){
         return await axios.post(this.#addLikeUrl+idComment+"/",{
             idUser   
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -33,7 +41,10 @@ export default class CommentApi{
         return await axios.post(this.#removelikeUrl+idComment+"/",{
             idUser   
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -47,7 +58,10 @@ export default class CommentApi{
         return await axios.post(this.#addDislikeUrl+idComment+"/",{
             idUser   
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -61,7 +75,10 @@ export default class CommentApi{
         return await axios.post(this.#removeDislikeUrl+idComment+"/",{
             idUser   
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function (response){
             return response.data;
         }).catch(function(error){
@@ -75,7 +92,10 @@ export default class CommentApi{
         await axios.post(this.#createNewComment,{
             comment
         },{
-            withCredentials:true
+            withCredentials:true,
+            headers:{
+                csrf_token: this.#token
+            }
         }).then(function(response){
 
         }).catch(function(error){
