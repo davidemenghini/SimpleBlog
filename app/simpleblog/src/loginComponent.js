@@ -27,9 +27,8 @@ export default class LoginForm extends React.Component{
                 <b>Username:</b><br></br>
                 <input onChange={evt => this.userChangeHandler(evt)} type="text" name="user"></input><br></br>
                 <b>Password:</b><br></br>
-                <input  onChange={evt => this.passChangeHandler(evt)} type="text" name="pass"></input><br></br>
+                <input  onChange={evt => this.passChangeHandler(evt)} type="password" name="pass"></input><br></br>
                 <button className="btn btn-success" onClick={()=>this.props.loginFunc(this.state.user,this.state.pass)}>Effettua il login!</button><br></br>
-                <button className="btn btn-warning">Cancella dati!</button><br></br>
             </div> : 
             <div className="spinner-border text-primary" role="status" style={{position: 'fixed',width: '100%',textAlign: 'center'}}>
                 <h1 className="sr-only">Loading...</h1>
